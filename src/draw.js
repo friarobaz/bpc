@@ -58,20 +58,6 @@ const drawPoints = (ctx, points, color = "red") => {
     ctx.lineTo(point.x, point.y)
   }
 
-  /*   let i
-
-  for (i = 1; i < points.length - 2; i++) {
-    var xc = (points[i].x + points[i + 1].x) / 2
-    var yc = (points[i].y + points[i + 1].y) / 2
-    ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc)
-  }
-  // curve through the last two points
-  ctx.quadraticCurveTo(
-    points[i].x,
-    points[i].y,
-    points[i + 1].x,
-    points[i + 1].y
-  ) */
   ctx.stroke()
 }
 
@@ -89,7 +75,6 @@ export const draw = (x, y, canvas, lol) => {
   ctx.fillRect(x - 2, 0, 4, 10)
   ctx.strokeText(`${x}`, x + 15, 10)
   ctx.strokeText(`${y}`, 15, y + 10)
-  console.log("coucouqsdf")
 
   const points = [
     { x: 20, y: 1.5 },
@@ -101,17 +86,14 @@ export const draw = (x, y, canvas, lol) => {
   const pointsHeavy = points.map((p) => ({ x: p.x * 2, y: p.y * 2 }))
   drawPoints(ctx, points)
   drawPoints(ctx, pointsHeavy, "green")
-  let penis = findPoints(
-    (xx) => {
-      return xx * xx * 0.005
-    },
-    100,
-    240,
-    10
-  )
-  console.log("coucou", penis)
+  let testFunction = (i) => {
+    return Math.cos((i - 50) / 80) * 50 + 100 + i / 3
+  }
+  let penis = findPoints(testFunction, 150, 450, 3)
   drawPoints(ctx, penis, "purple")
-  circle(x, x * x * 0.005, ctx, "blue")
+  if (x < 450 && x > 150) {
+    circle(x, testFunction(x), ctx, "blue")
+  }
   console.log("circle", x, x * x * 0.005)
 
   ctx.beginPath()

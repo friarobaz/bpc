@@ -416,20 +416,6 @@ var app = (function () {
         ctx.lineTo(point.x, point.y);
       }
 
-      /*   let i
-
-      for (i = 1; i < points.length - 2; i++) {
-        var xc = (points[i].x + points[i + 1].x) / 2
-        var yc = (points[i].y + points[i + 1].y) / 2
-        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc)
-      }
-      // curve through the last two points
-      ctx.quadraticCurveTo(
-        points[i].x,
-        points[i].y,
-        points[i + 1].x,
-        points[i + 1].y
-      ) */
       ctx.stroke();
     };
 
@@ -447,7 +433,6 @@ var app = (function () {
       ctx.fillRect(x - 2, 0, 4, 10);
       ctx.strokeText(`${x}`, x + 15, 10);
       ctx.strokeText(`${y}`, 15, y + 10);
-      console.log("coucouqsdf");
 
       const points = [
         { x: 20, y: 1.5 },
@@ -459,17 +444,14 @@ var app = (function () {
       const pointsHeavy = points.map((p) => ({ x: p.x * 2, y: p.y * 2 }));
       drawPoints(ctx, points);
       drawPoints(ctx, pointsHeavy, "green");
-      let penis = findPoints(
-        (xx) => {
-          return xx * xx * 0.005
-        },
-        100,
-        240,
-        10
-      );
-      console.log("coucou", penis);
+      let testFunction = (i) => {
+        return Math.cos((i - 50) / 80) * 50 + 100 + i / 3
+      };
+      let penis = findPoints(testFunction, 150, 450, 3);
       drawPoints(ctx, penis, "purple");
-      circle(x, x * x * 0.005, ctx, "blue");
+      if (x < 450 && x > 150) {
+        circle(x, testFunction(x), ctx, "blue");
+      }
       console.log("circle", x, x * x * 0.005);
 
       ctx.beginPath();
@@ -500,11 +482,11 @@ var app = (function () {
     			t2 = text(/*gridSize*/ ctx[0]);
     			attr_dev(canvas_1, "id", "canvas");
     			attr_dev(canvas_1, "class", "svelte-1wrfk9w");
-    			add_location(canvas_1, file, 32, 0, 625);
+    			add_location(canvas_1, file, 31, 0, 627);
     			attr_dev(input, "type", "range");
     			attr_dev(input, "min", "20");
     			attr_dev(input, "max", "80");
-    			add_location(input, file, 33, 0, 674);
+    			add_location(input, file, 32, 0, 677);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -563,15 +545,14 @@ var app = (function () {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('Canvas', slots, []);
     	let canvas, ctx;
-    	let size = 10;
     	let gridSize = 40;
     	const CANVAS_HEIGHT = window.innerHeight - 100;
     	const CANVAS_WIDTH = window.innerWidth - 100;
 
     	document.onmousemove = e => {
-    		const x = e.clientX - canvas.offsetLeft;
-    		const y = e.clientY - canvas.offsetTop;
-    		draw(x, y, canvas, gridSize);
+    		const mouseX = e.clientX - canvas.offsetLeft;
+    		const mouseY = e.clientY - canvas.offsetTop;
+    		draw(mouseX, mouseY, canvas, gridSize);
     	};
 
     	onMount(() => {
@@ -603,7 +584,6 @@ var app = (function () {
     		draw,
     		canvas,
     		ctx,
-    		size,
     		gridSize,
     		CANVAS_HEIGHT,
     		CANVAS_WIDTH
@@ -612,7 +592,6 @@ var app = (function () {
     	$$self.$inject_state = $$props => {
     		if ('canvas' in $$props) $$invalidate(1, canvas = $$props.canvas);
     		if ('ctx' in $$props) $$invalidate(4, ctx = $$props.ctx);
-    		if ('size' in $$props) size = $$props.size;
     		if ('gridSize' in $$props) $$invalidate(0, gridSize = $$props.gridSize);
     	};
 
