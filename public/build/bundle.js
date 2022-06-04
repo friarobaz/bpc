@@ -438,6 +438,15 @@ var app = (function () {
       ctx.stroke();
     };
 
+    const drawGlide = (ctx, x, y) => {
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(x * 10, y * 10);
+      ctx.strokeStyle = "red";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    };
+
     const draw = (ctx, settings) => {
       ctx.clearRect(0, 0, settings.width, settings.height);
       drawGrid(ctx, settings.height, settings.width, 10, "rgba(0, 100, 255, 0.15)");
@@ -445,12 +454,19 @@ var app = (function () {
       cursorHelper(settings.mouseX, settings.mouseY, ctx);
 
       let testFunction = (i) => {
-        return Math.cos((i - 50) / 80) * 50 + 100 + i / 3
+        return (
+          Math.cos((i - settings.D) / settings.C) * settings.A +
+          settings.E +
+          i / settings.B
+        )
       };
-      let curvePoints = findPoints(testFunction, 150, 450, 10);
+      let curvePoints = findPoints(testFunction, 150, 460, 10);
+      let lightPoints = findPoints(testFunction, 0, 1500, 10);
+      drawCurve(ctx, lightPoints, "rgba(0,0,255,0.1)", 5);
       drawCurve(ctx, curvePoints, "blue", 5);
       if (settings.mouseX < 450 && settings.mouseX > 150) {
         circle(settings.mouseX, testFunction(settings.mouseX), ctx, "red");
+        drawGlide(ctx, settings.mouseX, testFunction(settings.mouseX));
       }
     };
 
@@ -460,10 +476,36 @@ var app = (function () {
     function create_fragment(ctx) {
     	let canvas_1;
     	let t0;
-    	let input;
+    	let br0;
     	let t1;
-    	let t2_value = /*settings*/ ctx[1].range + "";
+    	let input0;
     	let t2;
+    	let input1;
+    	let t3;
+    	let input2;
+    	let t4;
+    	let input3;
+    	let t5;
+    	let input4;
+    	let t6;
+    	let br1;
+    	let t7;
+    	let t8_value = /*settings*/ ctx[1].A + "";
+    	let t8;
+    	let t9;
+    	let t10_value = /*settings*/ ctx[1].B + "";
+    	let t10;
+    	let t11;
+    	let t12_value = /*settings*/ ctx[1].C + "";
+    	let t12;
+    	let t13;
+    	let t14_value = /*settings*/ ctx[1].D + "";
+    	let t14;
+    	let t15;
+    	let t16_value = /*settings*/ ctx[1].E + "";
+    	let t16;
+    	let t17;
+    	let br2;
     	let mounted;
     	let dispose;
 
@@ -471,16 +513,58 @@ var app = (function () {
     		c: function create() {
     			canvas_1 = element("canvas");
     			t0 = space();
-    			input = element("input");
-    			t1 = text("\nRange: ");
-    			t2 = text(t2_value);
+    			br0 = element("br");
+    			t1 = text("\nA: ");
+    			input0 = element("input");
+    			t2 = text("\nB: ");
+    			input1 = element("input");
+    			t3 = text("\nC: ");
+    			input2 = element("input");
+    			t4 = text("\nD:");
+    			input3 = element("input");
+    			t5 = text("\nE:");
+    			input4 = element("input");
+    			t6 = space();
+    			br1 = element("br");
+    			t7 = text("\nA: ");
+    			t8 = text(t8_value);
+    			t9 = text("\nB: ");
+    			t10 = text(t10_value);
+    			t11 = text("\nC: ");
+    			t12 = text(t12_value);
+    			t13 = text("\nD: ");
+    			t14 = text(t14_value);
+    			t15 = text("\nD: ");
+    			t16 = text(t16_value);
+    			t17 = space();
+    			br2 = element("br");
     			attr_dev(canvas_1, "id", "canvas");
     			attr_dev(canvas_1, "class", "svelte-1wrfk9w");
-    			add_location(canvas_1, file, 30, 0, 712);
-    			attr_dev(input, "type", "range");
-    			attr_dev(input, "min", "20");
-    			attr_dev(input, "max", "80");
-    			add_location(input, file, 31, 0, 762);
+    			add_location(canvas_1, file, 34, 0, 764);
+    			add_location(br0, file, 35, 0, 814);
+    			attr_dev(input0, "type", "range");
+    			attr_dev(input0, "min", "0");
+    			attr_dev(input0, "max", "100");
+    			add_location(input0, file, 36, 3, 822);
+    			attr_dev(input1, "type", "range");
+    			attr_dev(input1, "min", "1");
+    			attr_dev(input1, "max", "10");
+    			attr_dev(input1, "step", "0.1");
+    			add_location(input1, file, 37, 3, 885);
+    			attr_dev(input2, "type", "range");
+    			attr_dev(input2, "min", "20");
+    			attr_dev(input2, "max", "120");
+    			add_location(input2, file, 38, 3, 956);
+    			attr_dev(input3, "type", "range");
+    			attr_dev(input3, "min", "0");
+    			attr_dev(input3, "max", "100");
+    			add_location(input3, file, 39, 2, 1019);
+    			attr_dev(input4, "type", "range");
+    			attr_dev(input4, "min", "0");
+    			attr_dev(input4, "max", "200");
+    			add_location(input4, file, 40, 2, 1081);
+    			add_location(br1, file, 41, 0, 1141);
+    			add_location(br2, file, 47, 0, 1226);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -489,15 +573,49 @@ var app = (function () {
     			insert_dev(target, canvas_1, anchor);
     			/*canvas_1_binding*/ ctx[2](canvas_1);
     			insert_dev(target, t0, anchor);
-    			insert_dev(target, input, anchor);
-    			set_input_value(input, /*settings*/ ctx[1].range);
+    			insert_dev(target, br0, anchor);
     			insert_dev(target, t1, anchor);
+    			insert_dev(target, input0, anchor);
+    			set_input_value(input0, /*settings*/ ctx[1].A);
     			insert_dev(target, t2, anchor);
+    			insert_dev(target, input1, anchor);
+    			set_input_value(input1, /*settings*/ ctx[1].B);
+    			insert_dev(target, t3, anchor);
+    			insert_dev(target, input2, anchor);
+    			set_input_value(input2, /*settings*/ ctx[1].C);
+    			insert_dev(target, t4, anchor);
+    			insert_dev(target, input3, anchor);
+    			set_input_value(input3, /*settings*/ ctx[1].D);
+    			insert_dev(target, t5, anchor);
+    			insert_dev(target, input4, anchor);
+    			set_input_value(input4, /*settings*/ ctx[1].E);
+    			insert_dev(target, t6, anchor);
+    			insert_dev(target, br1, anchor);
+    			insert_dev(target, t7, anchor);
+    			insert_dev(target, t8, anchor);
+    			insert_dev(target, t9, anchor);
+    			insert_dev(target, t10, anchor);
+    			insert_dev(target, t11, anchor);
+    			insert_dev(target, t12, anchor);
+    			insert_dev(target, t13, anchor);
+    			insert_dev(target, t14, anchor);
+    			insert_dev(target, t15, anchor);
+    			insert_dev(target, t16, anchor);
+    			insert_dev(target, t17, anchor);
+    			insert_dev(target, br2, anchor);
 
     			if (!mounted) {
     				dispose = [
-    					listen_dev(input, "change", /*input_change_input_handler*/ ctx[3]),
-    					listen_dev(input, "input", /*input_change_input_handler*/ ctx[3])
+    					listen_dev(input0, "change", /*input0_change_input_handler*/ ctx[3]),
+    					listen_dev(input0, "input", /*input0_change_input_handler*/ ctx[3]),
+    					listen_dev(input1, "change", /*input1_change_input_handler*/ ctx[4]),
+    					listen_dev(input1, "input", /*input1_change_input_handler*/ ctx[4]),
+    					listen_dev(input2, "change", /*input2_change_input_handler*/ ctx[5]),
+    					listen_dev(input2, "input", /*input2_change_input_handler*/ ctx[5]),
+    					listen_dev(input3, "change", /*input3_change_input_handler*/ ctx[6]),
+    					listen_dev(input3, "input", /*input3_change_input_handler*/ ctx[6]),
+    					listen_dev(input4, "change", /*input4_change_input_handler*/ ctx[7]),
+    					listen_dev(input4, "input", /*input4_change_input_handler*/ ctx[7])
     				];
 
     				mounted = true;
@@ -505,10 +623,30 @@ var app = (function () {
     		},
     		p: function update(ctx, [dirty]) {
     			if (dirty & /*settings*/ 2) {
-    				set_input_value(input, /*settings*/ ctx[1].range);
+    				set_input_value(input0, /*settings*/ ctx[1].A);
     			}
 
-    			if (dirty & /*settings*/ 2 && t2_value !== (t2_value = /*settings*/ ctx[1].range + "")) set_data_dev(t2, t2_value);
+    			if (dirty & /*settings*/ 2) {
+    				set_input_value(input1, /*settings*/ ctx[1].B);
+    			}
+
+    			if (dirty & /*settings*/ 2) {
+    				set_input_value(input2, /*settings*/ ctx[1].C);
+    			}
+
+    			if (dirty & /*settings*/ 2) {
+    				set_input_value(input3, /*settings*/ ctx[1].D);
+    			}
+
+    			if (dirty & /*settings*/ 2) {
+    				set_input_value(input4, /*settings*/ ctx[1].E);
+    			}
+
+    			if (dirty & /*settings*/ 2 && t8_value !== (t8_value = /*settings*/ ctx[1].A + "")) set_data_dev(t8, t8_value);
+    			if (dirty & /*settings*/ 2 && t10_value !== (t10_value = /*settings*/ ctx[1].B + "")) set_data_dev(t10, t10_value);
+    			if (dirty & /*settings*/ 2 && t12_value !== (t12_value = /*settings*/ ctx[1].C + "")) set_data_dev(t12, t12_value);
+    			if (dirty & /*settings*/ 2 && t14_value !== (t14_value = /*settings*/ ctx[1].D + "")) set_data_dev(t14, t14_value);
+    			if (dirty & /*settings*/ 2 && t16_value !== (t16_value = /*settings*/ ctx[1].E + "")) set_data_dev(t16, t16_value);
     		},
     		i: noop,
     		o: noop,
@@ -516,9 +654,31 @@ var app = (function () {
     			if (detaching) detach_dev(canvas_1);
     			/*canvas_1_binding*/ ctx[2](null);
     			if (detaching) detach_dev(t0);
-    			if (detaching) detach_dev(input);
+    			if (detaching) detach_dev(br0);
     			if (detaching) detach_dev(t1);
+    			if (detaching) detach_dev(input0);
     			if (detaching) detach_dev(t2);
+    			if (detaching) detach_dev(input1);
+    			if (detaching) detach_dev(t3);
+    			if (detaching) detach_dev(input2);
+    			if (detaching) detach_dev(t4);
+    			if (detaching) detach_dev(input3);
+    			if (detaching) detach_dev(t5);
+    			if (detaching) detach_dev(input4);
+    			if (detaching) detach_dev(t6);
+    			if (detaching) detach_dev(br1);
+    			if (detaching) detach_dev(t7);
+    			if (detaching) detach_dev(t8);
+    			if (detaching) detach_dev(t9);
+    			if (detaching) detach_dev(t10);
+    			if (detaching) detach_dev(t11);
+    			if (detaching) detach_dev(t12);
+    			if (detaching) detach_dev(t13);
+    			if (detaching) detach_dev(t14);
+    			if (detaching) detach_dev(t15);
+    			if (detaching) detach_dev(t16);
+    			if (detaching) detach_dev(t17);
+    			if (detaching) detach_dev(br2);
     			mounted = false;
     			run_all(dispose);
     		}
@@ -545,7 +705,11 @@ var app = (function () {
     	let settings = {
     		mouseX: null,
     		mouseY: null,
-    		range: 40,
+    		A: 50,
+    		B: 3,
+    		C: 80,
+    		D: 40,
+    		E: 100,
     		width: CANVAS_WIDTH,
     		height: CANVAS_HEIGHT
     	};
@@ -576,8 +740,28 @@ var app = (function () {
     		});
     	}
 
-    	function input_change_input_handler() {
-    		settings.range = to_number(this.value);
+    	function input0_change_input_handler() {
+    		settings.A = to_number(this.value);
+    		$$invalidate(1, settings);
+    	}
+
+    	function input1_change_input_handler() {
+    		settings.B = to_number(this.value);
+    		$$invalidate(1, settings);
+    	}
+
+    	function input2_change_input_handler() {
+    		settings.C = to_number(this.value);
+    		$$invalidate(1, settings);
+    	}
+
+    	function input3_change_input_handler() {
+    		settings.D = to_number(this.value);
+    		$$invalidate(1, settings);
+    	}
+
+    	function input4_change_input_handler() {
+    		settings.E = to_number(this.value);
     		$$invalidate(1, settings);
     	}
 
@@ -601,7 +785,16 @@ var app = (function () {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [canvas, settings, canvas_1_binding, input_change_input_handler];
+    	return [
+    		canvas,
+    		settings,
+    		canvas_1_binding,
+    		input0_change_input_handler,
+    		input1_change_input_handler,
+    		input2_change_input_handler,
+    		input3_change_input_handler,
+    		input4_change_input_handler
+    	];
     }
 
     class Canvas extends SvelteComponentDev {

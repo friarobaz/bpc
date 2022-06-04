@@ -77,6 +77,15 @@ const drawCurve = (
   ctx.stroke()
 }
 
+const drawGlide = (ctx, x, y) => {
+  ctx.beginPath()
+  ctx.moveTo(0, 0)
+  ctx.lineTo(x * 10, y * 10)
+  ctx.strokeStyle = "red"
+  ctx.lineWidth = 1
+  ctx.stroke()
+}
+
 export const draw = (ctx, settings) => {
   ctx.clearRect(0, 0, settings.width, settings.height)
   drawGrid(ctx, settings.height, settings.width, 10, "rgba(0, 100, 255, 0.15)")
@@ -84,12 +93,19 @@ export const draw = (ctx, settings) => {
   cursorHelper(settings.mouseX, settings.mouseY, ctx)
 
   let testFunction = (i) => {
-    return Math.cos((i - 50) / 80) * 50 + 100 + i / 3
+    return (
+      Math.cos((i - settings.D) / settings.C) * settings.A +
+      settings.E +
+      i / settings.B
+    )
   }
-  let curvePoints = findPoints(testFunction, 150, 450, 10)
+  let curvePoints = findPoints(testFunction, 150, 460, 10)
+  let lightPoints = findPoints(testFunction, 0, 1500, 10)
+  drawCurve(ctx, lightPoints, "rgba(0,0,255,0.1)", 5)
   drawCurve(ctx, curvePoints, "blue", 5)
   if (settings.mouseX < 450 && settings.mouseX > 150) {
     circle(settings.mouseX, testFunction(settings.mouseX), ctx, "red")
+    drawGlide(ctx, settings.mouseX, testFunction(settings.mouseX))
   }
 }
 
