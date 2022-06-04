@@ -121,7 +121,7 @@ const rien = (ctx) => {
   drawPoints(ctx, points)
   drawPoints(ctx, pointsHeavy, "green")
   ctx.beginPath()
-  ctx.strokeStyle = "blue"
+  ctx.strokeStyle = "red"
   ctx.moveTo(0, 0)
   ctx.lineTo(points[3].x * 10, points[3].y * 10)
   ctx.stroke()
