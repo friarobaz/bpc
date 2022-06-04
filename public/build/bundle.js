@@ -374,8 +374,8 @@ var app = (function () {
       ctx.stroke();
     };
 
-    const drawGrid = (ctx, height, width, step) => {
-      ctx.strokeStyle = "black";
+    const drawGrid = (ctx, height, width, step, color = "black") => {
+      ctx.strokeStyle = color;
 
       for (let x = 0; x < width; x += step) {
         drawVerticalLine(ctx, x, height);
@@ -392,13 +392,19 @@ var app = (function () {
       ctx.fill();
     };
 
-    const findPoints = (myFunction, start = 0, end = 1500, precision = 0.2) => {
+    const findPoints = (
+      myFunction,
+      start = 0,
+      end = 1500,
+      precision = 0.2
+    ) => {
       let points = [];
       for (let i = start; i < end; i += precision) {
         points.push({ x: i, y: myFunction(i) });
       }
       return points
     };
+
     /**
      * @param {CanvasRenderingContext2D} ctx
      * @param points
@@ -419,26 +425,22 @@ var app = (function () {
       ctx.stroke();
     };
 
-    /**
-     * @param {number} x
-     * @param {number} y
-     * @param {HTMLCanvasElement} canvas
-     */
-    const draw = (x, y, canvas, lol) => {
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawGrid(ctx, canvas.height, canvas.width, 40);
+    const draw = (ctx, settings) => {
+      ctx.clearRect(0, 0, settings.width, settings.height);
+      drawGrid(ctx, settings.height, settings.width, 10, "rgba(0, 100, 255, 0.15)");
+      drawGrid(ctx, settings.height, settings.width, 50, "rgba(255, 150, 0, 0.4)");
       ctx.fillStyle = "red";
-      ctx.fillRect(0, y - 2, 10, 4);
-      ctx.fillRect(x - 2, 0, 4, 10);
-      ctx.strokeText(`${x}`, x + 15, 10);
-      ctx.strokeText(`${y}`, 15, y + 10);
+      ctx.fillRect(0, settings.mouseY - 2, 10, 4);
+      ctx.fillRect(settings.mouseX - 2, 0, 4, 10);
+      ctx.strokeStyle = "black";
+      ctx.strokeText(`${settings.mouseX}`, settings.mouseX + 15, 10);
+      ctx.strokeText(`${settings.mouseY}`, 15, settings.mouseY + 10);
 
       const points = [
         { x: 20, y: 1.5 },
         { x: 30, y: 1 },
         { x: 35, y: 1.3 },
-        { x: lol ?? 40, y: 1.7 },
+        { x: 40, y: 1.7 },
         { x: 50, y: 2.5 },
       ];
       const pointsHeavy = points.map((p) => ({ x: p.x * 2, y: p.y * 2 }));
@@ -447,12 +449,11 @@ var app = (function () {
       let testFunction = (i) => {
         return Math.cos((i - 50) / 80) * 50 + 100 + i / 3
       };
-      let penis = findPoints(testFunction, 150, 450, 3);
-      drawPoints(ctx, penis, "purple");
-      if (x < 450 && x > 150) {
-        circle(x, testFunction(x), ctx, "blue");
+      let curvePoints = findPoints(testFunction, 150, 450, 3);
+      drawPoints(ctx, curvePoints, "blue");
+      if (settings.mouseX < 450 && settings.mouseX > 150) {
+        circle(settings.mouseX, testFunction(settings.mouseX), ctx, "red");
       }
-      console.log("circle", x, x * x * 0.005);
 
       ctx.beginPath();
       ctx.strokeStyle = "blue";
@@ -469,6 +470,7 @@ var app = (function () {
     	let t0;
     	let input;
     	let t1;
+    	let t2_value = /*settings*/ ctx[1].range + "";
     	let t2;
     	let mounted;
     	let dispose;
@@ -478,15 +480,15 @@ var app = (function () {
     			canvas_1 = element("canvas");
     			t0 = space();
     			input = element("input");
-    			t1 = text("\nGrid size: ");
-    			t2 = text(/*gridSize*/ ctx[0]);
+    			t1 = text("\nRange: ");
+    			t2 = text(t2_value);
     			attr_dev(canvas_1, "id", "canvas");
     			attr_dev(canvas_1, "class", "svelte-1wrfk9w");
-    			add_location(canvas_1, file, 31, 0, 627);
+    			add_location(canvas_1, file, 30, 0, 712);
     			attr_dev(input, "type", "range");
     			attr_dev(input, "min", "20");
     			attr_dev(input, "max", "80");
-    			add_location(input, file, 32, 0, 677);
+    			add_location(input, file, 31, 0, 762);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -496,7 +498,7 @@ var app = (function () {
     			/*canvas_1_binding*/ ctx[2](canvas_1);
     			insert_dev(target, t0, anchor);
     			insert_dev(target, input, anchor);
-    			set_input_value(input, /*gridSize*/ ctx[0]);
+    			set_input_value(input, /*settings*/ ctx[1].range);
     			insert_dev(target, t1, anchor);
     			insert_dev(target, t2, anchor);
 
@@ -510,11 +512,11 @@ var app = (function () {
     			}
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*gridSize*/ 1) {
-    				set_input_value(input, /*gridSize*/ ctx[0]);
+    			if (dirty & /*settings*/ 2) {
+    				set_input_value(input, /*settings*/ ctx[1].range);
     			}
 
-    			if (dirty & /*gridSize*/ 1) set_data_dev(t2, /*gridSize*/ ctx[0]);
+    			if (dirty & /*settings*/ 2 && t2_value !== (t2_value = /*settings*/ ctx[1].range + "")) set_data_dev(t2, t2_value);
     		},
     		i: noop,
     		o: noop,
@@ -545,21 +547,29 @@ var app = (function () {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('Canvas', slots, []);
     	let canvas, ctx;
-    	let gridSize = 40;
     	const CANVAS_HEIGHT = window.innerHeight - 100;
     	const CANVAS_WIDTH = window.innerWidth - 100;
 
-    	document.onmousemove = e => {
-    		const mouseX = e.clientX - canvas.offsetLeft;
-    		const mouseY = e.clientY - canvas.offsetTop;
-    		draw(mouseX, mouseY, canvas, gridSize);
+    	let settings = {
+    		mouseX: null,
+    		mouseY: null,
+    		range: 40,
+    		width: CANVAS_WIDTH,
+    		height: CANVAS_HEIGHT
     	};
 
     	onMount(() => {
-    		$$invalidate(1, canvas.width = CANVAS_WIDTH, canvas);
-    		$$invalidate(1, canvas.height = CANVAS_HEIGHT, canvas);
-    		draw(0, 0, canvas);
+    		$$invalidate(0, canvas.width = CANVAS_WIDTH, canvas);
+    		$$invalidate(0, canvas.height = CANVAS_HEIGHT, canvas);
+    		ctx = canvas.getContext("2d");
+    		draw(ctx, settings);
     	});
+
+    	document.onmousemove = e => {
+    		$$invalidate(1, settings.mouseX = e.clientX - canvas.offsetLeft, settings);
+    		$$invalidate(1, settings.mouseY = e.clientY - canvas.offsetTop, settings);
+    		draw(ctx, settings);
+    	};
 
     	const writable_props = [];
 
@@ -570,13 +580,13 @@ var app = (function () {
     	function canvas_1_binding($$value) {
     		binding_callbacks[$$value ? 'unshift' : 'push'](() => {
     			canvas = $$value;
-    			$$invalidate(1, canvas);
+    			$$invalidate(0, canvas);
     		});
     	}
 
     	function input_change_input_handler() {
-    		gridSize = to_number(this.value);
-    		$$invalidate(0, gridSize);
+    		settings.range = to_number(this.value);
+    		$$invalidate(1, settings);
     	}
 
     	$$self.$capture_state = () => ({
@@ -584,26 +594,22 @@ var app = (function () {
     		draw,
     		canvas,
     		ctx,
-    		gridSize,
     		CANVAS_HEIGHT,
-    		CANVAS_WIDTH
+    		CANVAS_WIDTH,
+    		settings
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ('canvas' in $$props) $$invalidate(1, canvas = $$props.canvas);
-    		if ('ctx' in $$props) $$invalidate(4, ctx = $$props.ctx);
-    		if ('gridSize' in $$props) $$invalidate(0, gridSize = $$props.gridSize);
+    		if ('canvas' in $$props) $$invalidate(0, canvas = $$props.canvas);
+    		if ('ctx' in $$props) ctx = $$props.ctx;
+    		if ('settings' in $$props) $$invalidate(1, settings = $$props.settings);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	$$self.$$.update = () => {
-    		if ($$self.$$.dirty & /*gridSize*/ 1) ;
-    	};
-
-    	return [gridSize, canvas, canvas_1_binding, input_change_input_handler];
+    	return [canvas, settings, canvas_1_binding, input_change_input_handler];
     }
 
     class Canvas extends SvelteComponentDev {

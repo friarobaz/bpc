@@ -13,8 +13,8 @@ const drawVerticalLine = (ctx, x, yMax) => {
   ctx.stroke()
 }
 
-const drawGrid = (ctx, height, width, step) => {
-  ctx.strokeStyle = "black"
+export const drawGrid = (ctx, height, width, step, color = "black") => {
+  ctx.strokeStyle = color
 
   for (let x = 0; x < width; x += step) {
     drawVerticalLine(ctx, x, height)
@@ -24,14 +24,19 @@ const drawGrid = (ctx, height, width, step) => {
   }
 }
 
-const circle = (x, y, ctx, color = "red", radius = 3) => {
+export const circle = (x, y, ctx, color = "red", radius = 3) => {
   ctx.fillStyle = color
   ctx.beginPath()
   ctx.arc(x, y, radius, 0, 2 * Math.PI)
   ctx.fill()
 }
 
-const findPoints = (myFunction, start = 0, end = 1500, precision = 0.2) => {
+export const findPoints = (
+  myFunction,
+  start = 0,
+  end = 1500,
+  precision = 0.2
+) => {
   let points = []
   for (let i = start; i < end; i += precision) {
     points.push({ x: i, y: myFunction(i) })
@@ -39,8 +44,6 @@ const findPoints = (myFunction, start = 0, end = 1500, precision = 0.2) => {
   return points
 }
 
-const NX = 8
-const NY = 40
 /**
  * @param {CanvasRenderingContext2D} ctx
  * @param points
@@ -61,26 +64,22 @@ const drawPoints = (ctx, points, color = "red") => {
   ctx.stroke()
 }
 
-/**
- * @param {number} x
- * @param {number} y
- * @param {HTMLCanvasElement} canvas
- */
-export const draw = (x, y, canvas, lol) => {
-  const ctx = canvas.getContext("2d")
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-  drawGrid(ctx, canvas.height, canvas.width, 40)
+export const draw = (ctx, settings) => {
+  ctx.clearRect(0, 0, settings.width, settings.height)
+  drawGrid(ctx, settings.height, settings.width, 10, "rgba(0, 100, 255, 0.15)")
+  drawGrid(ctx, settings.height, settings.width, 50, "rgba(255, 150, 0, 0.4)")
   ctx.fillStyle = "red"
-  ctx.fillRect(0, y - 2, 10, 4)
-  ctx.fillRect(x - 2, 0, 4, 10)
-  ctx.strokeText(`${x}`, x + 15, 10)
-  ctx.strokeText(`${y}`, 15, y + 10)
+  ctx.fillRect(0, settings.mouseY - 2, 10, 4)
+  ctx.fillRect(settings.mouseX - 2, 0, 4, 10)
+  ctx.strokeStyle = "black"
+  ctx.strokeText(`${settings.mouseX}`, settings.mouseX + 15, 10)
+  ctx.strokeText(`${settings.mouseY}`, 15, settings.mouseY + 10)
 
   const points = [
     { x: 20, y: 1.5 },
     { x: 30, y: 1 },
     { x: 35, y: 1.3 },
-    { x: lol ?? 40, y: 1.7 },
+    { x: 40, y: 1.7 },
     { x: 50, y: 2.5 },
   ]
   const pointsHeavy = points.map((p) => ({ x: p.x * 2, y: p.y * 2 }))
@@ -89,12 +88,11 @@ export const draw = (x, y, canvas, lol) => {
   let testFunction = (i) => {
     return Math.cos((i - 50) / 80) * 50 + 100 + i / 3
   }
-  let penis = findPoints(testFunction, 150, 450, 3)
-  drawPoints(ctx, penis, "purple")
-  if (x < 450 && x > 150) {
-    circle(x, testFunction(x), ctx, "blue")
+  let curvePoints = findPoints(testFunction, 150, 450, 3)
+  drawPoints(ctx, curvePoints, "blue")
+  if (settings.mouseX < 450 && settings.mouseX > 150) {
+    circle(settings.mouseX, testFunction(settings.mouseX), ctx, "red")
   }
-  console.log("circle", x, x * x * 0.005)
 
   ctx.beginPath()
   ctx.strokeStyle = "blue"
