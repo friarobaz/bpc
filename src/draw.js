@@ -97,7 +97,7 @@ export const drawMouseLayer = (ctx, mouseCoordinates, origin, curve) => {
   const curveFunction = (i) => {
     return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
   }
-  if (mouseCoordinates.x > 150 && mouseCoordinates.x < 460) {
+  if (mouseCoordinates.x > 150 && mouseCoordinates.x < 350) {
     drawGlide(
       ctx,
       mouseCoordinates.x,
