@@ -381,22 +381,6 @@ var app = (function () {
       ctx.fill();
     };
 
-    const cursorHelper = (ctx, x, y) => {
-      ctx.setLineDash([5, 3]); /*dashes are 5px and spaces are 3px*/
-      ctx.lineWidth = 0.5;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, y);
-      ctx.moveTo(0, y);
-      ctx.lineTo(x, y);
-      ctx.stroke();
-      ctx.strokeStyle = "black";
-      ctx.setLineDash([]);
-      ctx.lineWidth = 1;
-      ctx.strokeText(`${x / 10} km/h`, x + 5, 8);
-      ctx.strokeText(`-${y / 100} m/s`, 0, y + 13);
-    };
-
     const findPoints = (
       myFunction,
       start = 0,
@@ -449,29 +433,43 @@ var app = (function () {
       }
     };
 
-    const drawGlide = (ctx, x, y, origin) => {
+    const drawGlide = (ctx, x, y, origin, color = "red") => {
       if (!origin) return
       (x - origin.x) / (y - origin.y);
       ctx.beginPath();
       ctx.moveTo(origin.x, origin.y);
       ctx.lineTo(x + (x - origin.x) * 5, y + (y - origin.y) * 5);
-      //ctx.lineTo(800, 800 / glide)
-      ctx.strokeStyle = "red";
+      ctx.strokeStyle = color;
       ctx.lineWidth = 1;
       ctx.stroke();
     };
 
-    const drawMouseLayer = (ctx, settings) => {
-      cursorHelper(ctx, settings.mouse.x, settings.mouse.y);
+    const drawMouseLayer = (ctx, mouseCoordinates, origin, curve) => {
+      //cursorHelper(ctx, mouseCoordinates.x, mouseCoordinates.y)
+      const curveFunction = (i) => {
+        return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
+      };
+      if (mouseCoordinates.x > 150 && mouseCoordinates.x < 460) {
+        drawGlide(
+          ctx,
+          mouseCoordinates.x,
+          curveFunction(mouseCoordinates.x),
+          origin,
+          "green"
+        );
+        circle(ctx, mouseCoordinates.x, curveFunction(mouseCoordinates.x), "green");
+      }
     };
 
-    const drawCurveLayer = (ctx, curve, origin) => {
+    const drawCurveLayer = (ctx, curve, origin, showEntireCurve = false) => {
       const curveFunction = (i) => {
         return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
       };
       const mainCurvePoints = findPoints(curveFunction, 150, 460, 2, origin);
       const allCurvePoints = findPoints(curveFunction, 0, 1500, 10);
-      drawCurve(ctx, allCurvePoints, "rgba(0,0,255,0.1)", 5, origin, false);
+      if (showEntireCurve) {
+        drawCurve(ctx, allCurvePoints, "rgba(0,0,255,0.1)", 5, origin, false);
+      }
       drawCurve(ctx, mainCurvePoints, "blue", 5, origin);
     };
 
@@ -517,7 +515,7 @@ var app = (function () {
     	let t2;
     	let br0;
     	let t3;
-    	let div2;
+    	let div3;
     	let t4;
     	let input0;
     	let t5;
@@ -561,6 +559,10 @@ var app = (function () {
     	let t27;
     	let t28_value = /*origin*/ ctx[0].y + "";
     	let t28;
+    	let t29;
+    	let div2;
+    	let t30;
+    	let input7;
     	let mounted;
     	let dispose;
 
@@ -575,7 +577,7 @@ var app = (function () {
     			t2 = space();
     			br0 = element("br");
     			t3 = space();
-    			div2 = element("div");
+    			div3 = element("div");
     			t4 = text("A: ");
     			input0 = element("input");
     			t5 = text("\n    B: ");
@@ -612,55 +614,62 @@ var app = (function () {
     			input6 = element("input");
     			t27 = space();
     			t28 = text(t28_value);
+    			t29 = space();
+    			div2 = element("div");
+    			t30 = text("Montrer toute la courbe : \n        ");
+    			input7 = element("input");
     			attr_dev(canvas0, "id", "grid");
     			attr_dev(canvas0, "class", "svelte-19yrjb4");
-    			add_location(canvas0, file, 55, 1, 1850);
+    			add_location(canvas0, file, 59, 1, 1944);
     			attr_dev(canvas1, "id", "curve");
     			attr_dev(canvas1, "class", "svelte-19yrjb4");
-    			add_location(canvas1, file, 56, 1, 1902);
+    			add_location(canvas1, file, 60, 1, 1996);
     			attr_dev(canvas2, "id", "mouse");
     			attr_dev(canvas2, "class", "svelte-19yrjb4");
-    			add_location(canvas2, file, 57, 1, 1956);
+    			add_location(canvas2, file, 61, 1, 2050);
     			attr_dev(div0, "id", "container");
     			attr_dev(div0, "class", "svelte-19yrjb4");
-    			add_location(div0, file, 54, 0, 1806);
-    			add_location(br0, file, 60, 0, 2017);
+    			add_location(div0, file, 58, 0, 1900);
+    			add_location(br0, file, 64, 0, 2111);
     			attr_dev(input0, "type", "range");
     			attr_dev(input0, "min", "0");
     			attr_dev(input0, "max", "100");
-    			add_location(input0, file, 62, 7, 2049);
+    			add_location(input0, file, 66, 7, 2143);
     			attr_dev(input1, "type", "range");
     			attr_dev(input1, "min", "1");
     			attr_dev(input1, "max", "10");
     			attr_dev(input1, "step", "0.1");
-    			add_location(input1, file, 63, 7, 2119);
+    			add_location(input1, file, 67, 7, 2213);
     			attr_dev(input2, "type", "range");
     			attr_dev(input2, "min", "20");
     			attr_dev(input2, "max", "120");
-    			add_location(input2, file, 64, 7, 2198);
+    			add_location(input2, file, 68, 7, 2292);
     			attr_dev(input3, "type", "range");
     			attr_dev(input3, "min", "0");
     			attr_dev(input3, "max", "500");
-    			add_location(input3, file, 65, 6, 2269);
+    			add_location(input3, file, 69, 6, 2363);
     			attr_dev(input4, "type", "range");
     			attr_dev(input4, "min", "0");
     			attr_dev(input4, "max", "200");
-    			add_location(input4, file, 66, 6, 2339);
-    			add_location(br1, file, 67, 4, 2407);
-    			add_location(br2, file, 73, 4, 2536);
+    			add_location(input4, file, 70, 6, 2433);
+    			add_location(br1, file, 71, 4, 2501);
+    			add_location(br2, file, 77, 4, 2630);
     			attr_dev(input5, "type", "range");
     			attr_dev(input5, "min", "-200");
     			attr_dev(input5, "max", "200");
-    			add_location(input5, file, 75, 21, 2572);
-    			add_location(br3, file, 75, 93, 2644);
+    			add_location(input5, file, 79, 21, 2666);
+    			add_location(br3, file, 79, 93, 2738);
     			attr_dev(input6, "type", "range");
     			attr_dev(input6, "min", "-100");
     			attr_dev(input6, "max", "100");
-    			add_location(input6, file, 76, 18, 2667);
-    			add_location(div1, file, 74, 4, 2545);
-    			attr_dev(div2, "id", "controls");
-    			attr_dev(div2, "class", "svelte-19yrjb4");
-    			add_location(div2, file, 61, 0, 2022);
+    			add_location(input6, file, 80, 18, 2761);
+    			add_location(div1, file, 78, 4, 2639);
+    			attr_dev(input7, "type", "checkbox");
+    			add_location(input7, file, 84, 8, 2897);
+    			add_location(div2, file, 82, 4, 2848);
+    			attr_dev(div3, "id", "controls");
+    			attr_dev(div3, "class", "svelte-19yrjb4");
+    			add_location(div3, file, 65, 0, 2116);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -668,49 +677,49 @@ var app = (function () {
     		m: function mount(target, anchor) {
     			insert_dev(target, div0, anchor);
     			append_dev(div0, canvas0);
-    			/*canvas0_binding*/ ctx[7](canvas0);
+    			/*canvas0_binding*/ ctx[8](canvas0);
     			append_dev(div0, t0);
     			append_dev(div0, canvas1);
-    			/*canvas1_binding*/ ctx[8](canvas1);
+    			/*canvas1_binding*/ ctx[9](canvas1);
     			append_dev(div0, t1);
     			append_dev(div0, canvas2);
-    			/*canvas2_binding*/ ctx[9](canvas2);
-    			/*div0_binding*/ ctx[10](div0);
+    			/*canvas2_binding*/ ctx[10](canvas2);
+    			/*div0_binding*/ ctx[11](div0);
     			insert_dev(target, t2, anchor);
     			insert_dev(target, br0, anchor);
     			insert_dev(target, t3, anchor);
-    			insert_dev(target, div2, anchor);
-    			append_dev(div2, t4);
-    			append_dev(div2, input0);
+    			insert_dev(target, div3, anchor);
+    			append_dev(div3, t4);
+    			append_dev(div3, input0);
     			set_input_value(input0, /*curveNumbers*/ ctx[1].A);
-    			append_dev(div2, t5);
-    			append_dev(div2, input1);
+    			append_dev(div3, t5);
+    			append_dev(div3, input1);
     			set_input_value(input1, /*curveNumbers*/ ctx[1].B);
-    			append_dev(div2, t6);
-    			append_dev(div2, input2);
+    			append_dev(div3, t6);
+    			append_dev(div3, input2);
     			set_input_value(input2, /*curveNumbers*/ ctx[1].C);
-    			append_dev(div2, t7);
-    			append_dev(div2, input3);
+    			append_dev(div3, t7);
+    			append_dev(div3, input3);
     			set_input_value(input3, /*curveNumbers*/ ctx[1].D);
-    			append_dev(div2, t8);
-    			append_dev(div2, input4);
+    			append_dev(div3, t8);
+    			append_dev(div3, input4);
     			set_input_value(input4, /*curveNumbers*/ ctx[1].E);
-    			append_dev(div2, t9);
-    			append_dev(div2, br1);
-    			append_dev(div2, t10);
-    			append_dev(div2, t11);
-    			append_dev(div2, t12);
-    			append_dev(div2, t13);
-    			append_dev(div2, t14);
-    			append_dev(div2, t15);
-    			append_dev(div2, t16);
-    			append_dev(div2, t17);
-    			append_dev(div2, t18);
-    			append_dev(div2, t19);
-    			append_dev(div2, t20);
-    			append_dev(div2, br2);
-    			append_dev(div2, t21);
-    			append_dev(div2, div1);
+    			append_dev(div3, t9);
+    			append_dev(div3, br1);
+    			append_dev(div3, t10);
+    			append_dev(div3, t11);
+    			append_dev(div3, t12);
+    			append_dev(div3, t13);
+    			append_dev(div3, t14);
+    			append_dev(div3, t15);
+    			append_dev(div3, t16);
+    			append_dev(div3, t17);
+    			append_dev(div3, t18);
+    			append_dev(div3, t19);
+    			append_dev(div3, t20);
+    			append_dev(div3, br2);
+    			append_dev(div3, t21);
+    			append_dev(div3, div1);
     			append_dev(div1, t22);
     			append_dev(div1, input5);
     			set_input_value(input5, /*origin*/ ctx[0].x);
@@ -723,23 +732,29 @@ var app = (function () {
     			set_input_value(input6, /*origin*/ ctx[0].y);
     			append_dev(div1, t27);
     			append_dev(div1, t28);
+    			append_dev(div3, t29);
+    			append_dev(div3, div2);
+    			append_dev(div2, t30);
+    			append_dev(div2, input7);
+    			input7.checked = /*showEntireCurve*/ ctx[2];
 
     			if (!mounted) {
     				dispose = [
-    					listen_dev(input0, "change", /*input0_change_input_handler*/ ctx[11]),
-    					listen_dev(input0, "input", /*input0_change_input_handler*/ ctx[11]),
-    					listen_dev(input1, "change", /*input1_change_input_handler*/ ctx[12]),
-    					listen_dev(input1, "input", /*input1_change_input_handler*/ ctx[12]),
-    					listen_dev(input2, "change", /*input2_change_input_handler*/ ctx[13]),
-    					listen_dev(input2, "input", /*input2_change_input_handler*/ ctx[13]),
-    					listen_dev(input3, "change", /*input3_change_input_handler*/ ctx[14]),
-    					listen_dev(input3, "input", /*input3_change_input_handler*/ ctx[14]),
-    					listen_dev(input4, "change", /*input4_change_input_handler*/ ctx[15]),
-    					listen_dev(input4, "input", /*input4_change_input_handler*/ ctx[15]),
-    					listen_dev(input5, "change", /*input5_change_input_handler*/ ctx[16]),
-    					listen_dev(input5, "input", /*input5_change_input_handler*/ ctx[16]),
-    					listen_dev(input6, "change", /*input6_change_input_handler*/ ctx[17]),
-    					listen_dev(input6, "input", /*input6_change_input_handler*/ ctx[17])
+    					listen_dev(input0, "change", /*input0_change_input_handler*/ ctx[12]),
+    					listen_dev(input0, "input", /*input0_change_input_handler*/ ctx[12]),
+    					listen_dev(input1, "change", /*input1_change_input_handler*/ ctx[13]),
+    					listen_dev(input1, "input", /*input1_change_input_handler*/ ctx[13]),
+    					listen_dev(input2, "change", /*input2_change_input_handler*/ ctx[14]),
+    					listen_dev(input2, "input", /*input2_change_input_handler*/ ctx[14]),
+    					listen_dev(input3, "change", /*input3_change_input_handler*/ ctx[15]),
+    					listen_dev(input3, "input", /*input3_change_input_handler*/ ctx[15]),
+    					listen_dev(input4, "change", /*input4_change_input_handler*/ ctx[16]),
+    					listen_dev(input4, "input", /*input4_change_input_handler*/ ctx[16]),
+    					listen_dev(input5, "change", /*input5_change_input_handler*/ ctx[17]),
+    					listen_dev(input5, "input", /*input5_change_input_handler*/ ctx[17]),
+    					listen_dev(input6, "change", /*input6_change_input_handler*/ ctx[18]),
+    					listen_dev(input6, "input", /*input6_change_input_handler*/ ctx[18]),
+    					listen_dev(input7, "change", /*input7_change_handler*/ ctx[19])
     				];
 
     				mounted = true;
@@ -783,19 +798,23 @@ var app = (function () {
     			}
 
     			if (dirty & /*origin*/ 1 && t28_value !== (t28_value = /*origin*/ ctx[0].y + "")) set_data_dev(t28, t28_value);
+
+    			if (dirty & /*showEntireCurve*/ 4) {
+    				input7.checked = /*showEntireCurve*/ ctx[2];
+    			}
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div0);
-    			/*canvas0_binding*/ ctx[7](null);
-    			/*canvas1_binding*/ ctx[8](null);
-    			/*canvas2_binding*/ ctx[9](null);
-    			/*div0_binding*/ ctx[10](null);
+    			/*canvas0_binding*/ ctx[8](null);
+    			/*canvas1_binding*/ ctx[9](null);
+    			/*canvas2_binding*/ ctx[10](null);
+    			/*div0_binding*/ ctx[11](null);
     			if (detaching) detach_dev(t2);
     			if (detaching) detach_dev(br0);
     			if (detaching) detach_dev(t3);
-    			if (detaching) detach_dev(div2);
+    			if (detaching) detach_dev(div3);
     			mounted = false;
     			run_all(dispose);
     		}
@@ -820,23 +839,24 @@ var app = (function () {
     	const CANVAS_WIDTH = window.innerWidth - 100;
 
     	let settings = {
-    		mouse: { x: 0, y: 0 },
     		width: CANVAS_WIDTH,
     		height: CANVAS_HEIGHT
     	};
 
+    	let mouseCoordinates = { x: 0, y: 0 };
     	let origin = { x: 0, y: 0 };
     	let curveNumbers = { A: 40, B: 3, C: 85, D: 17, E: 100 };
+    	let showEntireCurve = false;
 
     	onMount(() => {
-    		$$invalidate(2, gridCanvas.width = CANVAS_WIDTH, gridCanvas);
-    		$$invalidate(3, curveCanvas.width = CANVAS_WIDTH, curveCanvas);
-    		$$invalidate(4, mouseCanvas.width = CANVAS_WIDTH, mouseCanvas);
-    		$$invalidate(2, gridCanvas.height = CANVAS_HEIGHT, gridCanvas);
-    		$$invalidate(3, curveCanvas.height = CANVAS_HEIGHT, curveCanvas);
-    		$$invalidate(4, mouseCanvas.height = CANVAS_HEIGHT, mouseCanvas);
+    		$$invalidate(3, gridCanvas.width = CANVAS_WIDTH, gridCanvas);
+    		$$invalidate(4, curveCanvas.width = CANVAS_WIDTH, curveCanvas);
+    		$$invalidate(5, mouseCanvas.width = CANVAS_WIDTH, mouseCanvas);
+    		$$invalidate(3, gridCanvas.height = CANVAS_HEIGHT, gridCanvas);
+    		$$invalidate(4, curveCanvas.height = CANVAS_HEIGHT, curveCanvas);
+    		$$invalidate(5, mouseCanvas.height = CANVAS_HEIGHT, mouseCanvas);
     		grid = gridCanvas.getContext("2d");
-    		$$invalidate(6, curve = curveCanvas.getContext("2d"));
+    		$$invalidate(7, curve = curveCanvas.getContext("2d"));
     		mouse = mouseCanvas.getContext("2d");
     		drawGrid(grid, CANVAS_HEIGHT, CANVAS_WIDTH, 10, "rgba(0, 100, 255, 0.15)");
     		drawGrid(grid, CANVAS_HEIGHT, CANVAS_WIDTH, 50, "rgba(255, 150, 0, 0.4)");
@@ -846,13 +866,13 @@ var app = (function () {
     	document.onmousemove = e => {
     		const x = e.clientX - container.offsetLeft;
     		const y = e.clientY - container.offsetTop;
-    		settings.mouse.x = x;
-    		settings.mouse.y = y;
+    		mouseCoordinates.x = x;
+    		mouseCoordinates.y = y;
     		mouse.clearRect(0, 0, settings.width, settings.height);
 
     		if (x >= 0 && x <= CANVAS_WIDTH && y >= 0 && y <= CANVAS_HEIGHT) {
     			console.log('updating mouse');
-    			drawMouseLayer(mouse, settings);
+    			drawMouseLayer(mouse, mouseCoordinates, origin, curveNumbers);
     		}
     	};
 
@@ -865,28 +885,28 @@ var app = (function () {
     	function canvas0_binding($$value) {
     		binding_callbacks[$$value ? 'unshift' : 'push'](() => {
     			gridCanvas = $$value;
-    			$$invalidate(2, gridCanvas);
+    			$$invalidate(3, gridCanvas);
     		});
     	}
 
     	function canvas1_binding($$value) {
     		binding_callbacks[$$value ? 'unshift' : 'push'](() => {
     			curveCanvas = $$value;
-    			$$invalidate(3, curveCanvas);
+    			$$invalidate(4, curveCanvas);
     		});
     	}
 
     	function canvas2_binding($$value) {
     		binding_callbacks[$$value ? 'unshift' : 'push'](() => {
     			mouseCanvas = $$value;
-    			$$invalidate(4, mouseCanvas);
+    			$$invalidate(5, mouseCanvas);
     		});
     	}
 
     	function div0_binding($$value) {
     		binding_callbacks[$$value ? 'unshift' : 'push'](() => {
     			container = $$value;
-    			$$invalidate(5, container);
+    			$$invalidate(6, container);
     		});
     	}
 
@@ -925,6 +945,11 @@ var app = (function () {
     		$$invalidate(0, origin);
     	}
 
+    	function input7_change_handler() {
+    		showEntireCurve = this.checked;
+    		$$invalidate(2, showEntireCurve);
+    	}
+
     	$$self.$capture_state = () => ({
     		onMount,
     		drawMouseLayer,
@@ -940,21 +965,25 @@ var app = (function () {
     		CANVAS_HEIGHT,
     		CANVAS_WIDTH,
     		settings,
+    		mouseCoordinates,
     		origin,
-    		curveNumbers
+    		curveNumbers,
+    		showEntireCurve
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ('gridCanvas' in $$props) $$invalidate(2, gridCanvas = $$props.gridCanvas);
-    		if ('curveCanvas' in $$props) $$invalidate(3, curveCanvas = $$props.curveCanvas);
-    		if ('mouseCanvas' in $$props) $$invalidate(4, mouseCanvas = $$props.mouseCanvas);
+    		if ('gridCanvas' in $$props) $$invalidate(3, gridCanvas = $$props.gridCanvas);
+    		if ('curveCanvas' in $$props) $$invalidate(4, curveCanvas = $$props.curveCanvas);
+    		if ('mouseCanvas' in $$props) $$invalidate(5, mouseCanvas = $$props.mouseCanvas);
     		if ('grid' in $$props) grid = $$props.grid;
-    		if ('curve' in $$props) $$invalidate(6, curve = $$props.curve);
+    		if ('curve' in $$props) $$invalidate(7, curve = $$props.curve);
     		if ('mouse' in $$props) mouse = $$props.mouse;
-    		if ('container' in $$props) $$invalidate(5, container = $$props.container);
+    		if ('container' in $$props) $$invalidate(6, container = $$props.container);
     		if ('settings' in $$props) settings = $$props.settings;
+    		if ('mouseCoordinates' in $$props) mouseCoordinates = $$props.mouseCoordinates;
     		if ('origin' in $$props) $$invalidate(0, origin = $$props.origin);
     		if ('curveNumbers' in $$props) $$invalidate(1, curveNumbers = $$props.curveNumbers);
+    		if ('showEntireCurve' in $$props) $$invalidate(2, showEntireCurve = $$props.showEntireCurve);
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -962,11 +991,11 @@ var app = (function () {
     	}
 
     	$$self.$$.update = () => {
-    		if ($$self.$$.dirty & /*curve, curveNumbers, origin*/ 67) {
+    		if ($$self.$$.dirty & /*curve, curveNumbers, origin, showEntireCurve*/ 135) {
     			if (curve) {
     				console.log('updating curve');
     				curve.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    				drawCurveLayer(curve, curveNumbers, origin);
+    				drawCurveLayer(curve, curveNumbers, origin, showEntireCurve);
     			}
     		}
     	};
@@ -974,6 +1003,7 @@ var app = (function () {
     	return [
     		origin,
     		curveNumbers,
+    		showEntireCurve,
     		gridCanvas,
     		curveCanvas,
     		mouseCanvas,
@@ -989,7 +1019,8 @@ var app = (function () {
     		input3_change_input_handler,
     		input4_change_input_handler,
     		input5_change_input_handler,
-    		input6_change_input_handler
+    		input6_change_input_handler,
+    		input7_change_handler
     	];
     }
 

@@ -7,16 +7,19 @@
     const CANVAS_WIDTH = window.innerWidth - 100
     
     let settings = {
-        mouse:{x:0, y:0},
         width: CANVAS_WIDTH,
         height: CANVAS_HEIGHT,
     }
+    let mouseCoordinates = {x:0, y:0}
     let origin = {x:0, y:0}
-    let curveNumbers = {A:40,
-            B:3,
-            C:85,
-            D:17,
-            E:100}
+    let curveNumbers = {
+        A:40,
+        B:3,
+        C:85,
+        D:17,
+        E:100
+    }
+    let showEntireCurve = false
 
     onMount(() => {
         gridCanvas.width = CANVAS_WIDTH;
@@ -36,18 +39,19 @@
     document.onmousemove = e =>{
         const x = e.clientX - container.offsetLeft
         const y = e.clientY - container.offsetTop
-        settings.mouse.x = x
-        settings.mouse.y = y
+        mouseCoordinates.x = x
+        mouseCoordinates.y = y
         mouse.clearRect(0, 0, settings.width, settings.height)
         if (x >= 0 && x <= CANVAS_WIDTH && y >= 0 && y <= CANVAS_HEIGHT) {
             console.log('updating mouse')
-            drawMouseLayer(mouse, settings)
+            drawMouseLayer(mouse, mouseCoordinates, origin, curveNumbers)
         }
     }
+
     $:if (curve) {
         console.log('updating curve')
         curve.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-        drawCurveLayer(curve, curveNumbers, origin)
+        drawCurveLayer(curve, curveNumbers, origin, showEntireCurve)
     }
 
 </script>
@@ -75,6 +79,10 @@
     <div>
         Vent de face:<input type="range" min=-200 max=200 bind:value={origin.x} > {origin.x} <br>
         Thermique:<input type="range" min=-100 max=100 bind:value={origin.y} > {origin.y}
+    </div>
+    <div>
+        Montrer toute la courbe : 
+        <input type="checkbox" bind:checked={showEntireCurve}>
     </div>
 </div>
 

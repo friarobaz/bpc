@@ -15,8 +15,8 @@ const cursorHelper = (ctx, x, y) => {
   ctx.lineTo(x, y)
   ctx.moveTo(0, y)
   ctx.lineTo(x, y)
-  ctx.stroke()
   ctx.strokeStyle = "black"
+  ctx.stroke()
   ctx.setLineDash([])
   ctx.lineWidth = 1
   ctx.strokeText(`${x / 10} km/h`, x + 5, 8)
@@ -75,14 +75,13 @@ export const drawCurve = (
   }
 }
 
-export const drawGlide = (ctx, x, y, origin) => {
+export const drawGlide = (ctx, x, y, origin, color = "red") => {
   if (!origin) return
   const glide = (x - origin.x) / (y - origin.y)
   ctx.beginPath()
   ctx.moveTo(origin.x, origin.y)
   ctx.lineTo(x + (x - origin.x) * 5, y + (y - origin.y) * 5)
-  //ctx.lineTo(800, 800 / glide)
-  ctx.strokeStyle = "red"
+  ctx.strokeStyle = color
   ctx.lineWidth = 1
   ctx.stroke()
 }
@@ -93,16 +92,31 @@ const distance = (pointA, pointB) => {
   return Math.sqrt(a * a + b * b)
 }
 
-export const drawMouseLayer = (ctx, settings) => {
-  cursorHelper(ctx, settings.mouse.x, settings.mouse.y)
+export const drawMouseLayer = (ctx, mouseCoordinates, origin, curve) => {
+  //cursorHelper(ctx, mouseCoordinates.x, mouseCoordinates.y)
+  const curveFunction = (i) => {
+    return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
+  }
+  if (mouseCoordinates.x > 150 && mouseCoordinates.x < 460) {
+    drawGlide(
+      ctx,
+      mouseCoordinates.x,
+      curveFunction(mouseCoordinates.x),
+      origin,
+      "green"
+    )
+    circle(ctx, mouseCoordinates.x, curveFunction(mouseCoordinates.x), "green")
+  }
 }
 
-export const drawCurveLayer = (ctx, curve, origin) => {
+export const drawCurveLayer = (ctx, curve, origin, showEntireCurve = false) => {
   const curveFunction = (i) => {
     return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
   }
   const mainCurvePoints = findPoints(curveFunction, 150, 460, 2, origin)
   const allCurvePoints = findPoints(curveFunction, 0, 1500, 10)
-  drawCurve(ctx, allCurvePoints, "rgba(0,0,255,0.1)", 5, origin, false)
+  if (showEntireCurve) {
+    drawCurve(ctx, allCurvePoints, "rgba(0,0,255,0.1)", 5, origin, false)
+  }
   drawCurve(ctx, mainCurvePoints, "blue", 5, origin)
 }
