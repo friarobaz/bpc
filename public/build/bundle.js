@@ -381,6 +381,22 @@ var app = (function () {
       ctx.fill();
     };
 
+    const cursorHelper = (ctx, x, y) => {
+      ctx.setLineDash([5, 3]); /*dashes are 5px and spaces are 3px*/
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, y);
+      ctx.moveTo(0, y);
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = "black";
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.lineWidth = 1;
+      ctx.strokeText(`${x / 10} km/h`, x + 5, 8);
+      ctx.strokeText(`-${y / 100} m/s`, 0, y + 13);
+    };
+
     const findPoints = (
       myFunction,
       start = 0,
@@ -445,7 +461,7 @@ var app = (function () {
     };
 
     const drawMouseLayer = (ctx, mouseCoordinates, origin, curve) => {
-      //cursorHelper(ctx, mouseCoordinates.x, mouseCoordinates.y)
+      cursorHelper(ctx, mouseCoordinates.x, mouseCoordinates.y);
       const curveFunction = (i) => {
         return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
       };
