@@ -115,8 +115,20 @@ export const drawCurveLayer = (ctx, curve, origin, showEntireCurve = false) => {
   }
   const mainCurvePoints = findPoints(curveFunction, 150, 460, 2, origin)
   const allCurvePoints = findPoints(curveFunction, 0, 1500, 10)
+  const heavyCurvePoints = mainCurvePoints.map((p) => ({
+    x: p.x * 1.5,
+    y: p.y * 1.5,
+    bestGlide: p.bestGlide,
+  }))
+  const lightCurvePoints = mainCurvePoints.map((p) => ({
+    x: p.x / 1.5,
+    y: p.y / 1.5,
+    bestGlide: p.bestGlide,
+  }))
   if (showEntireCurve) {
     drawCurve(ctx, allCurvePoints, "rgba(0,0,255,0.1)", 5, origin, false)
   }
+  drawCurve(ctx, heavyCurvePoints, "purple", 5, origin)
+  drawCurve(ctx, lightCurvePoints, "cyan", 5, origin)
   drawCurve(ctx, mainCurvePoints, "blue", 5, origin)
 }
