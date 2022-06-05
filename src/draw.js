@@ -93,7 +93,7 @@ const distance = (pointA, pointB) => {
 }
 
 export const drawMouseLayer = (ctx, mouseCoordinates, origin, curve) => {
-  cursorHelper(ctx, mouseCoordinates.x, mouseCoordinates.y)
+  //cursorHelper(ctx, mouseCoordinates.x, mouseCoordinates.y)
   const curveFunction = (i) => {
     return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
   }
