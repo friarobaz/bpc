@@ -707,8 +707,8 @@ var app = (function () {
     		mouseY: null,
     		A: 50,
     		B: 3,
-    		C: 80,
-    		D: 40,
+    		C: 85,
+    		D: 17,
     		E: 100,
     		width: CANVAS_WIDTH,
     		height: CANVAS_HEIGHT
