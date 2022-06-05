@@ -22,6 +22,7 @@
     let curveNumbers = structuredClone(defaultCurveNumbers)
     let showEntireCurve = false
     let showCurveControls = false
+    let showAllPTV = true
 
     onMount(() => {
         gridCanvas.width = CANVAS_WIDTH;
@@ -53,7 +54,7 @@
     $:if (curve) {
         console.log('updating curve')
         curve.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-        drawCurveLayer(curve, curveNumbers, origin, showEntireCurve)
+        drawCurveLayer(curve, curveNumbers, origin, showEntireCurve, showAllPTV)
     }
 
     const reset = ()=>{
@@ -79,6 +80,9 @@
     <br>
     <button on:click={reset}>Reinitialiser</button>
     <br>
+      Montrer différentes charges alaires : 
+<input type="checkbox" bind:checked={showAllPTV}>
+<br>
     Modifier la polaire : 
 <input type="checkbox" bind:checked={showCurveControls}>
 <br>
@@ -87,7 +91,7 @@
         
             A: <input type="range" min=0 max=100 bind:value={curveNumbers.A}>
             B: <input type="range" min=1 max=10 step=0.1 bind:value={curveNumbers.B} >
-            C: <input type="range" min=20 max=120 bind:value={curveNumbers.C} >
+            C: <input type="range" min=40 max=120 bind:value={curveNumbers.C} >
             D:<input type="range" min=0 max=1000 bind:value={curveNumbers.D} >
             E:<input type="range" min=0 max=200 bind:value={curveNumbers.E} >
             <br>

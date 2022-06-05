@@ -109,7 +109,13 @@ export const drawMouseLayer = (ctx, mouseCoordinates, origin, curve) => {
   }
 }
 
-export const drawCurveLayer = (ctx, curve, origin, showEntireCurve = false) => {
+export const drawCurveLayer = (
+  ctx,
+  curve,
+  origin,
+  showEntireCurve = false,
+  showAllPTV
+) => {
   const curveFunction = (i) => {
     return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
   }
@@ -128,7 +134,9 @@ export const drawCurveLayer = (ctx, curve, origin, showEntireCurve = false) => {
   if (showEntireCurve) {
     drawCurve(ctx, allCurvePoints, "rgba(0,0,255,0.1)", 5, origin, false)
   }
-  drawCurve(ctx, heavyCurvePoints, "purple", 5, origin)
-  drawCurve(ctx, lightCurvePoints, "cyan", 5, origin)
+  if (showAllPTV) {
+    drawCurve(ctx, heavyCurvePoints, "purple", 5, origin)
+    drawCurve(ctx, lightCurvePoints, "cyan", 5, origin)
+  }
   drawCurve(ctx, mainCurvePoints, "blue", 5, origin)
 }
