@@ -11,11 +11,11 @@
         height: CANVAS_HEIGHT,
     }
     const defaultCurveNumbers = {
-        A:40,
+        A:58,
         B:3,
         C:85,
-        D:17,
-        E:100
+        D:500,
+        E:90
     }
     let mouseCoordinates = {x:0, y:0}
     let origin = {x:0, y:0}
@@ -74,7 +74,7 @@
 <div id="controls">
 
 <div>
-        Vent de face:<input type="range" min=-200 max=200 bind:value={origin.x} > {origin.x} <br>
+        Vent de face:<input type="range" min=-300 max=200 bind:value={origin.x} > {origin.x} <br>
         Thermique:<input type="range" min=-100 max=100 bind:value={origin.y} > {origin.y}
     </div>
     <br>

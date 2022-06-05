@@ -471,7 +471,7 @@ var app = (function () {
       const curveFunction = (i) => {
         return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
       };
-      const mainCurvePoints = findPoints(curveFunction, 150, 460, 2, origin);
+      const mainCurvePoints = findPoints(curveFunction, 150, 350, 2, origin);
       const allCurvePoints = findPoints(curveFunction, 0, 1500, 10);
       const heavyCurvePoints = mainCurvePoints.map((p) => ({
         x: p.x * 1.5,
@@ -845,7 +845,7 @@ var app = (function () {
     			add_location(div0, file, 66, 0, 2161);
     			add_location(br0, file, 72, 0, 2372);
     			attr_dev(input0, "type", "range");
-    			attr_dev(input0, "min", "-200");
+    			attr_dev(input0, "min", "-300");
     			attr_dev(input0, "max", "200");
     			add_location(input0, file, 76, 21, 2425);
     			add_location(br1, file, 76, 93, 2497);
@@ -1006,7 +1006,7 @@ var app = (function () {
     		height: CANVAS_HEIGHT
     	};
 
-    	const defaultCurveNumbers = { A: 40, B: 3, C: 85, D: 17, E: 100 };
+    	const defaultCurveNumbers = { A: 58, B: 3, C: 85, D: 500, E: 90 };
     	let mouseCoordinates = { x: 0, y: 0 };
     	let origin = { x: 0, y: 0 };
     	let curveNumbers = structuredClone(defaultCurveNumbers);

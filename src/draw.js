@@ -119,7 +119,7 @@ export const drawCurveLayer = (
   const curveFunction = (i) => {
     return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
   }
-  const mainCurvePoints = findPoints(curveFunction, 150, 460, 2, origin)
+  const mainCurvePoints = findPoints(curveFunction, 150, 350, 2, origin)
   const allCurvePoints = findPoints(curveFunction, 0, 1500, 10)
   const heavyCurvePoints = mainCurvePoints.map((p) => ({
     x: p.x * 1.5,
