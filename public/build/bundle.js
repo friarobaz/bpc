@@ -27,6 +27,9 @@ var app = (function () {
     function is_empty(obj) {
         return Object.keys(obj).length === 0;
     }
+    function append(target, node) {
+        target.appendChild(node);
+    }
     function insert(target, node, anchor) {
         target.insertBefore(node, anchor || null);
     }
@@ -168,6 +171,12 @@ var app = (function () {
             block.i(local);
         }
     }
+
+    const globals = (typeof window !== 'undefined'
+        ? window
+        : typeof globalThis !== 'undefined'
+            ? globalThis
+            : global);
     function mount_component(component, target, anchor, customElement) {
         const { fragment, on_mount, on_destroy, after_update } = component.$$;
         fragment && fragment.m(target, anchor);
@@ -297,6 +306,10 @@ var app = (function () {
     function dispatch_dev(type, detail) {
         document.dispatchEvent(custom_event(type, Object.assign({ version: '3.48.0' }, detail), { bubbles: true }));
     }
+    function append_dev(target, node) {
+        dispatch_dev('SvelteDOMInsert', { target, node });
+        append(target, node);
+    }
     function insert_dev(target, node, anchor) {
         dispatch_dev('SvelteDOMInsert', { target, node, anchor });
         insert(target, node, anchor);
@@ -360,6 +373,109 @@ var app = (function () {
     }
 
     // @ts-check
+
+    const circle = (ctx, x, y, color = "red", radius = 3) => {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, 2 * Math.PI);
+      ctx.fill();
+    };
+
+    const cursorHelper = (ctx, x, y) => {
+      ctx.setLineDash([5, 3]); /*dashes are 5px and spaces are 3px*/
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, y);
+      ctx.moveTo(0, y);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.strokeStyle = "black";
+      ctx.setLineDash([]);
+      ctx.lineWidth = 1;
+      ctx.strokeText(`${x / 10} km/h`, x + 5, 8);
+      ctx.strokeText(`-${y / 100} m/s`, 0, y + 13);
+    };
+
+    const findPoints = (
+      myFunction,
+      start = 0,
+      end = 1500,
+      precision = 0.2,
+      origin = { x: 0, y: 0 }
+    ) => {
+      let points = [];
+      let bestGlide = 0;
+      let bestGlideIndex = 0;
+      for (let x = start; x < end; x += precision) {
+        const y = myFunction(x);
+        const glide = (x - origin.x) / (y - origin.y);
+        points.push({ x, y, glide, bestGlide: false });
+        if (glide > bestGlide) {
+          bestGlide = glide;
+          bestGlideIndex = points.length - 1;
+        }
+      }
+      points[bestGlideIndex].bestGlide = true;
+      return points
+    };
+
+    /**
+     * @param {CanvasRenderingContext2D} ctx
+     * @param points
+     * @param {string} color
+     */
+    const drawCurve = (
+      ctx,
+      points,
+      color = "red",
+      lineWidth = 2,
+      origin,
+      showGlide = true
+    ) => {
+      ctx.strokeStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+
+      for (const point of points) {
+        ctx.lineTo(point.x, point.y);
+      }
+      ctx.lineWidth = lineWidth;
+      ctx.stroke();
+      if (showGlide) {
+        const bestGlidePoint = points.filter((x) => x.bestGlide)[0];
+        circle(ctx, bestGlidePoint.x, bestGlidePoint.y, `red`, 5);
+        drawGlide(ctx, bestGlidePoint.x, bestGlidePoint.y, origin);
+      }
+    };
+
+    const drawGlide = (ctx, x, y, origin) => {
+      if (!origin) return
+      (x - origin.x) / (y - origin.y);
+      ctx.beginPath();
+      ctx.moveTo(origin.x, origin.y);
+      ctx.lineTo(x + (x - origin.x) * 5, y + (y - origin.y) * 5);
+      //ctx.lineTo(800, 800 / glide)
+      ctx.strokeStyle = "red";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    };
+
+    const drawMouseLayer = (ctx, settings) => {
+      cursorHelper(ctx, settings.mouse.x, settings.mouse.y);
+    };
+
+    const drawCurveLayer = (ctx, curve, origin) => {
+      const curveFunction = (i) => {
+        return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
+      };
+      const mainCurvePoints = findPoints(curveFunction, 150, 460, 2, origin);
+      const allCurvePoints = findPoints(curveFunction, 0, 1500, 10);
+      drawCurve(ctx, allCurvePoints, "rgba(0,0,255,0.1)", 5, origin, false);
+      drawCurve(ctx, mainCurvePoints, "blue", 5, origin);
+    };
+
+    // @ts-check
     const drawHorizontalLine = (ctx, y, xMax) => {
       ctx.beginPath();
       ctx.moveTo(0, y);
@@ -386,299 +502,300 @@ var app = (function () {
       }
     };
 
-    const circle = (x, y, ctx, color = "red", radius = 3) => {
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, 2 * Math.PI);
-      ctx.fill();
-    };
-
-    const cursorHelper = (x, y, ctx) => {
-      ctx.fillStyle = "red";
-      ctx.fillRect(0, y - 2, 10, 4);
-      ctx.fillRect(x - 2, 0, 4, 10);
-      ctx.strokeStyle = "black";
-      ctx.strokeText(`${x}`, x + 15, 10);
-      ctx.strokeText(`${y}`, 15, y + 10);
-    };
-
-    const findPoints = (myFunction, start = 0, end = 1500, precision = 0.2) => {
-      let points = [];
-      for (let i = start; i < end; i += precision) {
-        points.push({ x: i, y: myFunction(i) });
-      }
-      return points
-    };
-
-    /**
-     * @param {CanvasRenderingContext2D} ctx
-     * @param points
-     * @param {string} color
-     */
-    const drawCurve = (
-      ctx,
-      points,
-      color = "red",
-      lineWidth = 2,
-      showPoints = false
-    ) => {
-      ctx.strokeStyle = color;
-      if (showPoints) {
-        for (const point of points) {
-          circle(point.x, point.y, ctx, color);
-        }
-      }
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-
-      for (const point of points) {
-        ctx.lineTo(point.x, point.y);
-      }
-      ctx.lineWidth = lineWidth;
-      ctx.stroke();
-    };
-
-    const drawGlide = (ctx, x, y) => {
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(x * 10, y * 10);
-      ctx.strokeStyle = "red";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    };
-
-    const draw = (ctx, settings) => {
-      ctx.clearRect(0, 0, settings.width, settings.height);
-      drawGrid(ctx, settings.height, settings.width, 10, "rgba(0, 100, 255, 0.15)");
-      drawGrid(ctx, settings.height, settings.width, 50, "rgba(255, 150, 0, 0.4)");
-      cursorHelper(settings.mouseX, settings.mouseY, ctx);
-
-      let testFunction = (i) => {
-        return (
-          Math.cos((i - settings.D) / settings.C) * settings.A +
-          settings.E +
-          i / settings.B
-        )
-      };
-      let curvePoints = findPoints(testFunction, 150, 460, 10);
-      let lightPoints = findPoints(testFunction, 0, 1500, 10);
-      drawCurve(ctx, lightPoints, "rgba(0,0,255,0.1)", 5);
-      drawCurve(ctx, curvePoints, "blue", 5);
-      if (settings.mouseX < 450 && settings.mouseX > 150) {
-        circle(settings.mouseX, testFunction(settings.mouseX), ctx, "red");
-        drawGlide(ctx, settings.mouseX, testFunction(settings.mouseX));
-      }
-    };
-
     /* src/Canvas.svelte generated by Svelte v3.48.0 */
+
+    const { console: console_1 } = globals;
     const file = "src/Canvas.svelte";
 
     function create_fragment(ctx) {
-    	let canvas_1;
+    	let div0;
+    	let canvas0;
     	let t0;
-    	let br0;
+    	let canvas1;
     	let t1;
-    	let input0;
+    	let canvas2;
     	let t2;
-    	let input1;
+    	let br0;
     	let t3;
-    	let input2;
+    	let div2;
     	let t4;
-    	let input3;
+    	let input0;
     	let t5;
-    	let input4;
+    	let input1;
     	let t6;
-    	let br1;
+    	let input2;
     	let t7;
-    	let t8_value = /*settings*/ ctx[1].A + "";
+    	let input3;
     	let t8;
+    	let input4;
     	let t9;
-    	let t10_value = /*settings*/ ctx[1].B + "";
+    	let br1;
     	let t10;
+    	let t11_value = /*curveNumbers*/ ctx[1].A + "";
     	let t11;
-    	let t12_value = /*settings*/ ctx[1].C + "";
     	let t12;
+    	let t13_value = /*curveNumbers*/ ctx[1].B + "";
     	let t13;
-    	let t14_value = /*settings*/ ctx[1].D + "";
     	let t14;
+    	let t15_value = /*curveNumbers*/ ctx[1].C + "";
     	let t15;
-    	let t16_value = /*settings*/ ctx[1].E + "";
     	let t16;
+    	let t17_value = /*curveNumbers*/ ctx[1].D + "";
     	let t17;
+    	let t18;
+    	let t19_value = /*curveNumbers*/ ctx[1].E + "";
+    	let t19;
+    	let t20;
     	let br2;
+    	let t21;
+    	let div1;
+    	let t22;
+    	let input5;
+    	let t23;
+    	let t24_value = /*origin*/ ctx[0].x + "";
+    	let t24;
+    	let t25;
+    	let br3;
+    	let t26;
+    	let input6;
+    	let t27;
+    	let t28_value = /*origin*/ ctx[0].y + "";
+    	let t28;
     	let mounted;
     	let dispose;
 
     	const block = {
     		c: function create() {
-    			canvas_1 = element("canvas");
+    			div0 = element("div");
+    			canvas0 = element("canvas");
     			t0 = space();
+    			canvas1 = element("canvas");
+    			t1 = space();
+    			canvas2 = element("canvas");
+    			t2 = space();
     			br0 = element("br");
-    			t1 = text("\nA: ");
+    			t3 = space();
+    			div2 = element("div");
+    			t4 = text("A: ");
     			input0 = element("input");
-    			t2 = text("\nB: ");
+    			t5 = text("\n    B: ");
     			input1 = element("input");
-    			t3 = text("\nC: ");
+    			t6 = text("\n    C: ");
     			input2 = element("input");
-    			t4 = text("\nD:");
+    			t7 = text("\n    D:");
     			input3 = element("input");
-    			t5 = text("\nE:");
+    			t8 = text("\n    E:");
     			input4 = element("input");
-    			t6 = space();
+    			t9 = space();
     			br1 = element("br");
-    			t7 = text("\nA: ");
-    			t8 = text(t8_value);
-    			t9 = text("\nB: ");
-    			t10 = text(t10_value);
-    			t11 = text("\nC: ");
-    			t12 = text(t12_value);
-    			t13 = text("\nD: ");
-    			t14 = text(t14_value);
-    			t15 = text("\nD: ");
-    			t16 = text(t16_value);
-    			t17 = space();
+    			t10 = text("\n    A: ");
+    			t11 = text(t11_value);
+    			t12 = text("\n    B: ");
+    			t13 = text(t13_value);
+    			t14 = text("\n    C: ");
+    			t15 = text(t15_value);
+    			t16 = text("\n    D: ");
+    			t17 = text(t17_value);
+    			t18 = text("\n    E: ");
+    			t19 = text(t19_value);
+    			t20 = space();
     			br2 = element("br");
-    			attr_dev(canvas_1, "id", "canvas");
-    			attr_dev(canvas_1, "class", "svelte-1wrfk9w");
-    			add_location(canvas_1, file, 34, 0, 764);
-    			add_location(br0, file, 35, 0, 814);
+    			t21 = space();
+    			div1 = element("div");
+    			t22 = text("Vent de face:");
+    			input5 = element("input");
+    			t23 = space();
+    			t24 = text(t24_value);
+    			t25 = space();
+    			br3 = element("br");
+    			t26 = text("\n        Thermique:");
+    			input6 = element("input");
+    			t27 = space();
+    			t28 = text(t28_value);
+    			attr_dev(canvas0, "id", "grid");
+    			attr_dev(canvas0, "class", "svelte-19yrjb4");
+    			add_location(canvas0, file, 55, 1, 1850);
+    			attr_dev(canvas1, "id", "curve");
+    			attr_dev(canvas1, "class", "svelte-19yrjb4");
+    			add_location(canvas1, file, 56, 1, 1902);
+    			attr_dev(canvas2, "id", "mouse");
+    			attr_dev(canvas2, "class", "svelte-19yrjb4");
+    			add_location(canvas2, file, 57, 1, 1956);
+    			attr_dev(div0, "id", "container");
+    			attr_dev(div0, "class", "svelte-19yrjb4");
+    			add_location(div0, file, 54, 0, 1806);
+    			add_location(br0, file, 60, 0, 2017);
     			attr_dev(input0, "type", "range");
     			attr_dev(input0, "min", "0");
     			attr_dev(input0, "max", "100");
-    			add_location(input0, file, 36, 3, 822);
+    			add_location(input0, file, 62, 7, 2049);
     			attr_dev(input1, "type", "range");
     			attr_dev(input1, "min", "1");
     			attr_dev(input1, "max", "10");
     			attr_dev(input1, "step", "0.1");
-    			add_location(input1, file, 37, 3, 885);
+    			add_location(input1, file, 63, 7, 2119);
     			attr_dev(input2, "type", "range");
     			attr_dev(input2, "min", "20");
     			attr_dev(input2, "max", "120");
-    			add_location(input2, file, 38, 3, 956);
+    			add_location(input2, file, 64, 7, 2198);
     			attr_dev(input3, "type", "range");
     			attr_dev(input3, "min", "0");
-    			attr_dev(input3, "max", "100");
-    			add_location(input3, file, 39, 2, 1019);
+    			attr_dev(input3, "max", "500");
+    			add_location(input3, file, 65, 6, 2269);
     			attr_dev(input4, "type", "range");
     			attr_dev(input4, "min", "0");
     			attr_dev(input4, "max", "200");
-    			add_location(input4, file, 40, 2, 1081);
-    			add_location(br1, file, 41, 0, 1141);
-    			add_location(br2, file, 47, 0, 1226);
+    			add_location(input4, file, 66, 6, 2339);
+    			add_location(br1, file, 67, 4, 2407);
+    			add_location(br2, file, 73, 4, 2536);
+    			attr_dev(input5, "type", "range");
+    			attr_dev(input5, "min", "-200");
+    			attr_dev(input5, "max", "200");
+    			add_location(input5, file, 75, 21, 2572);
+    			add_location(br3, file, 75, 93, 2644);
+    			attr_dev(input6, "type", "range");
+    			attr_dev(input6, "min", "-100");
+    			attr_dev(input6, "max", "100");
+    			add_location(input6, file, 76, 18, 2667);
+    			add_location(div1, file, 74, 4, 2545);
+    			attr_dev(div2, "id", "controls");
+    			attr_dev(div2, "class", "svelte-19yrjb4");
+    			add_location(div2, file, 61, 0, 2022);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, canvas_1, anchor);
-    			/*canvas_1_binding*/ ctx[2](canvas_1);
-    			insert_dev(target, t0, anchor);
-    			insert_dev(target, br0, anchor);
-    			insert_dev(target, t1, anchor);
-    			insert_dev(target, input0, anchor);
-    			set_input_value(input0, /*settings*/ ctx[1].A);
+    			insert_dev(target, div0, anchor);
+    			append_dev(div0, canvas0);
+    			/*canvas0_binding*/ ctx[7](canvas0);
+    			append_dev(div0, t0);
+    			append_dev(div0, canvas1);
+    			/*canvas1_binding*/ ctx[8](canvas1);
+    			append_dev(div0, t1);
+    			append_dev(div0, canvas2);
+    			/*canvas2_binding*/ ctx[9](canvas2);
+    			/*div0_binding*/ ctx[10](div0);
     			insert_dev(target, t2, anchor);
-    			insert_dev(target, input1, anchor);
-    			set_input_value(input1, /*settings*/ ctx[1].B);
+    			insert_dev(target, br0, anchor);
     			insert_dev(target, t3, anchor);
-    			insert_dev(target, input2, anchor);
-    			set_input_value(input2, /*settings*/ ctx[1].C);
-    			insert_dev(target, t4, anchor);
-    			insert_dev(target, input3, anchor);
-    			set_input_value(input3, /*settings*/ ctx[1].D);
-    			insert_dev(target, t5, anchor);
-    			insert_dev(target, input4, anchor);
-    			set_input_value(input4, /*settings*/ ctx[1].E);
-    			insert_dev(target, t6, anchor);
-    			insert_dev(target, br1, anchor);
-    			insert_dev(target, t7, anchor);
-    			insert_dev(target, t8, anchor);
-    			insert_dev(target, t9, anchor);
-    			insert_dev(target, t10, anchor);
-    			insert_dev(target, t11, anchor);
-    			insert_dev(target, t12, anchor);
-    			insert_dev(target, t13, anchor);
-    			insert_dev(target, t14, anchor);
-    			insert_dev(target, t15, anchor);
-    			insert_dev(target, t16, anchor);
-    			insert_dev(target, t17, anchor);
-    			insert_dev(target, br2, anchor);
+    			insert_dev(target, div2, anchor);
+    			append_dev(div2, t4);
+    			append_dev(div2, input0);
+    			set_input_value(input0, /*curveNumbers*/ ctx[1].A);
+    			append_dev(div2, t5);
+    			append_dev(div2, input1);
+    			set_input_value(input1, /*curveNumbers*/ ctx[1].B);
+    			append_dev(div2, t6);
+    			append_dev(div2, input2);
+    			set_input_value(input2, /*curveNumbers*/ ctx[1].C);
+    			append_dev(div2, t7);
+    			append_dev(div2, input3);
+    			set_input_value(input3, /*curveNumbers*/ ctx[1].D);
+    			append_dev(div2, t8);
+    			append_dev(div2, input4);
+    			set_input_value(input4, /*curveNumbers*/ ctx[1].E);
+    			append_dev(div2, t9);
+    			append_dev(div2, br1);
+    			append_dev(div2, t10);
+    			append_dev(div2, t11);
+    			append_dev(div2, t12);
+    			append_dev(div2, t13);
+    			append_dev(div2, t14);
+    			append_dev(div2, t15);
+    			append_dev(div2, t16);
+    			append_dev(div2, t17);
+    			append_dev(div2, t18);
+    			append_dev(div2, t19);
+    			append_dev(div2, t20);
+    			append_dev(div2, br2);
+    			append_dev(div2, t21);
+    			append_dev(div2, div1);
+    			append_dev(div1, t22);
+    			append_dev(div1, input5);
+    			set_input_value(input5, /*origin*/ ctx[0].x);
+    			append_dev(div1, t23);
+    			append_dev(div1, t24);
+    			append_dev(div1, t25);
+    			append_dev(div1, br3);
+    			append_dev(div1, t26);
+    			append_dev(div1, input6);
+    			set_input_value(input6, /*origin*/ ctx[0].y);
+    			append_dev(div1, t27);
+    			append_dev(div1, t28);
 
     			if (!mounted) {
     				dispose = [
-    					listen_dev(input0, "change", /*input0_change_input_handler*/ ctx[3]),
-    					listen_dev(input0, "input", /*input0_change_input_handler*/ ctx[3]),
-    					listen_dev(input1, "change", /*input1_change_input_handler*/ ctx[4]),
-    					listen_dev(input1, "input", /*input1_change_input_handler*/ ctx[4]),
-    					listen_dev(input2, "change", /*input2_change_input_handler*/ ctx[5]),
-    					listen_dev(input2, "input", /*input2_change_input_handler*/ ctx[5]),
-    					listen_dev(input3, "change", /*input3_change_input_handler*/ ctx[6]),
-    					listen_dev(input3, "input", /*input3_change_input_handler*/ ctx[6]),
-    					listen_dev(input4, "change", /*input4_change_input_handler*/ ctx[7]),
-    					listen_dev(input4, "input", /*input4_change_input_handler*/ ctx[7])
+    					listen_dev(input0, "change", /*input0_change_input_handler*/ ctx[11]),
+    					listen_dev(input0, "input", /*input0_change_input_handler*/ ctx[11]),
+    					listen_dev(input1, "change", /*input1_change_input_handler*/ ctx[12]),
+    					listen_dev(input1, "input", /*input1_change_input_handler*/ ctx[12]),
+    					listen_dev(input2, "change", /*input2_change_input_handler*/ ctx[13]),
+    					listen_dev(input2, "input", /*input2_change_input_handler*/ ctx[13]),
+    					listen_dev(input3, "change", /*input3_change_input_handler*/ ctx[14]),
+    					listen_dev(input3, "input", /*input3_change_input_handler*/ ctx[14]),
+    					listen_dev(input4, "change", /*input4_change_input_handler*/ ctx[15]),
+    					listen_dev(input4, "input", /*input4_change_input_handler*/ ctx[15]),
+    					listen_dev(input5, "change", /*input5_change_input_handler*/ ctx[16]),
+    					listen_dev(input5, "input", /*input5_change_input_handler*/ ctx[16]),
+    					listen_dev(input6, "change", /*input6_change_input_handler*/ ctx[17]),
+    					listen_dev(input6, "input", /*input6_change_input_handler*/ ctx[17])
     				];
 
     				mounted = true;
     			}
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*settings*/ 2) {
-    				set_input_value(input0, /*settings*/ ctx[1].A);
+    			if (dirty & /*curveNumbers*/ 2) {
+    				set_input_value(input0, /*curveNumbers*/ ctx[1].A);
     			}
 
-    			if (dirty & /*settings*/ 2) {
-    				set_input_value(input1, /*settings*/ ctx[1].B);
+    			if (dirty & /*curveNumbers*/ 2) {
+    				set_input_value(input1, /*curveNumbers*/ ctx[1].B);
     			}
 
-    			if (dirty & /*settings*/ 2) {
-    				set_input_value(input2, /*settings*/ ctx[1].C);
+    			if (dirty & /*curveNumbers*/ 2) {
+    				set_input_value(input2, /*curveNumbers*/ ctx[1].C);
     			}
 
-    			if (dirty & /*settings*/ 2) {
-    				set_input_value(input3, /*settings*/ ctx[1].D);
+    			if (dirty & /*curveNumbers*/ 2) {
+    				set_input_value(input3, /*curveNumbers*/ ctx[1].D);
     			}
 
-    			if (dirty & /*settings*/ 2) {
-    				set_input_value(input4, /*settings*/ ctx[1].E);
+    			if (dirty & /*curveNumbers*/ 2) {
+    				set_input_value(input4, /*curveNumbers*/ ctx[1].E);
     			}
 
-    			if (dirty & /*settings*/ 2 && t8_value !== (t8_value = /*settings*/ ctx[1].A + "")) set_data_dev(t8, t8_value);
-    			if (dirty & /*settings*/ 2 && t10_value !== (t10_value = /*settings*/ ctx[1].B + "")) set_data_dev(t10, t10_value);
-    			if (dirty & /*settings*/ 2 && t12_value !== (t12_value = /*settings*/ ctx[1].C + "")) set_data_dev(t12, t12_value);
-    			if (dirty & /*settings*/ 2 && t14_value !== (t14_value = /*settings*/ ctx[1].D + "")) set_data_dev(t14, t14_value);
-    			if (dirty & /*settings*/ 2 && t16_value !== (t16_value = /*settings*/ ctx[1].E + "")) set_data_dev(t16, t16_value);
+    			if (dirty & /*curveNumbers*/ 2 && t11_value !== (t11_value = /*curveNumbers*/ ctx[1].A + "")) set_data_dev(t11, t11_value);
+    			if (dirty & /*curveNumbers*/ 2 && t13_value !== (t13_value = /*curveNumbers*/ ctx[1].B + "")) set_data_dev(t13, t13_value);
+    			if (dirty & /*curveNumbers*/ 2 && t15_value !== (t15_value = /*curveNumbers*/ ctx[1].C + "")) set_data_dev(t15, t15_value);
+    			if (dirty & /*curveNumbers*/ 2 && t17_value !== (t17_value = /*curveNumbers*/ ctx[1].D + "")) set_data_dev(t17, t17_value);
+    			if (dirty & /*curveNumbers*/ 2 && t19_value !== (t19_value = /*curveNumbers*/ ctx[1].E + "")) set_data_dev(t19, t19_value);
+
+    			if (dirty & /*origin*/ 1) {
+    				set_input_value(input5, /*origin*/ ctx[0].x);
+    			}
+
+    			if (dirty & /*origin*/ 1 && t24_value !== (t24_value = /*origin*/ ctx[0].x + "")) set_data_dev(t24, t24_value);
+
+    			if (dirty & /*origin*/ 1) {
+    				set_input_value(input6, /*origin*/ ctx[0].y);
+    			}
+
+    			if (dirty & /*origin*/ 1 && t28_value !== (t28_value = /*origin*/ ctx[0].y + "")) set_data_dev(t28, t28_value);
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(canvas_1);
-    			/*canvas_1_binding*/ ctx[2](null);
-    			if (detaching) detach_dev(t0);
-    			if (detaching) detach_dev(br0);
-    			if (detaching) detach_dev(t1);
-    			if (detaching) detach_dev(input0);
+    			if (detaching) detach_dev(div0);
+    			/*canvas0_binding*/ ctx[7](null);
+    			/*canvas1_binding*/ ctx[8](null);
+    			/*canvas2_binding*/ ctx[9](null);
+    			/*div0_binding*/ ctx[10](null);
     			if (detaching) detach_dev(t2);
-    			if (detaching) detach_dev(input1);
+    			if (detaching) detach_dev(br0);
     			if (detaching) detach_dev(t3);
-    			if (detaching) detach_dev(input2);
-    			if (detaching) detach_dev(t4);
-    			if (detaching) detach_dev(input3);
-    			if (detaching) detach_dev(t5);
-    			if (detaching) detach_dev(input4);
-    			if (detaching) detach_dev(t6);
-    			if (detaching) detach_dev(br1);
-    			if (detaching) detach_dev(t7);
-    			if (detaching) detach_dev(t8);
-    			if (detaching) detach_dev(t9);
-    			if (detaching) detach_dev(t10);
-    			if (detaching) detach_dev(t11);
-    			if (detaching) detach_dev(t12);
-    			if (detaching) detach_dev(t13);
-    			if (detaching) detach_dev(t14);
-    			if (detaching) detach_dev(t15);
-    			if (detaching) detach_dev(t16);
-    			if (detaching) detach_dev(t17);
-    			if (detaching) detach_dev(br2);
+    			if (detaching) detach_dev(div2);
     			mounted = false;
     			run_all(dispose);
     		}
@@ -698,102 +815,181 @@ var app = (function () {
     function instance($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('Canvas', slots, []);
-    	let canvas, ctx;
-    	const CANVAS_HEIGHT = window.innerHeight - 100;
+    	let gridCanvas, curveCanvas, mouseCanvas, grid, curve, mouse, container;
+    	const CANVAS_HEIGHT = window.innerHeight - 200;
     	const CANVAS_WIDTH = window.innerWidth - 100;
 
     	let settings = {
-    		mouseX: null,
-    		mouseY: null,
-    		A: 50,
-    		B: 3,
-    		C: 85,
-    		D: 17,
-    		E: 100,
+    		mouse: { x: 0, y: 0 },
     		width: CANVAS_WIDTH,
     		height: CANVAS_HEIGHT
     	};
 
+    	let origin = { x: 0, y: 0 };
+    	let curveNumbers = { A: 40, B: 3, C: 85, D: 17, E: 100 };
+
     	onMount(() => {
-    		$$invalidate(0, canvas.width = CANVAS_WIDTH, canvas);
-    		$$invalidate(0, canvas.height = CANVAS_HEIGHT, canvas);
-    		ctx = canvas.getContext("2d");
-    		draw(ctx, settings);
+    		$$invalidate(2, gridCanvas.width = CANVAS_WIDTH, gridCanvas);
+    		$$invalidate(3, curveCanvas.width = CANVAS_WIDTH, curveCanvas);
+    		$$invalidate(4, mouseCanvas.width = CANVAS_WIDTH, mouseCanvas);
+    		$$invalidate(2, gridCanvas.height = CANVAS_HEIGHT, gridCanvas);
+    		$$invalidate(3, curveCanvas.height = CANVAS_HEIGHT, curveCanvas);
+    		$$invalidate(4, mouseCanvas.height = CANVAS_HEIGHT, mouseCanvas);
+    		grid = gridCanvas.getContext("2d");
+    		$$invalidate(6, curve = curveCanvas.getContext("2d"));
+    		mouse = mouseCanvas.getContext("2d");
+    		drawGrid(grid, CANVAS_HEIGHT, CANVAS_WIDTH, 10, "rgba(0, 100, 255, 0.15)");
+    		drawGrid(grid, CANVAS_HEIGHT, CANVAS_WIDTH, 50, "rgba(255, 150, 0, 0.4)");
+    		drawCurveLayer(curve, settings);
     	});
 
     	document.onmousemove = e => {
-    		$$invalidate(1, settings.mouseX = e.clientX - canvas.offsetLeft, settings);
-    		$$invalidate(1, settings.mouseY = e.clientY - canvas.offsetTop, settings);
-    		draw(ctx, settings);
+    		const x = e.clientX - container.offsetLeft;
+    		const y = e.clientY - container.offsetTop;
+    		settings.mouse.x = x;
+    		settings.mouse.y = y;
+    		mouse.clearRect(0, 0, settings.width, settings.height);
+
+    		if (x >= 0 && x <= CANVAS_WIDTH && y >= 0 && y <= CANVAS_HEIGHT) {
+    			console.log('updating mouse');
+    			drawMouseLayer(mouse, settings);
+    		}
     	};
 
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console.warn(`<Canvas> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console_1.warn(`<Canvas> was created with unknown prop '${key}'`);
     	});
 
-    	function canvas_1_binding($$value) {
+    	function canvas0_binding($$value) {
     		binding_callbacks[$$value ? 'unshift' : 'push'](() => {
-    			canvas = $$value;
-    			$$invalidate(0, canvas);
+    			gridCanvas = $$value;
+    			$$invalidate(2, gridCanvas);
+    		});
+    	}
+
+    	function canvas1_binding($$value) {
+    		binding_callbacks[$$value ? 'unshift' : 'push'](() => {
+    			curveCanvas = $$value;
+    			$$invalidate(3, curveCanvas);
+    		});
+    	}
+
+    	function canvas2_binding($$value) {
+    		binding_callbacks[$$value ? 'unshift' : 'push'](() => {
+    			mouseCanvas = $$value;
+    			$$invalidate(4, mouseCanvas);
+    		});
+    	}
+
+    	function div0_binding($$value) {
+    		binding_callbacks[$$value ? 'unshift' : 'push'](() => {
+    			container = $$value;
+    			$$invalidate(5, container);
     		});
     	}
 
     	function input0_change_input_handler() {
-    		settings.A = to_number(this.value);
-    		$$invalidate(1, settings);
+    		curveNumbers.A = to_number(this.value);
+    		$$invalidate(1, curveNumbers);
     	}
 
     	function input1_change_input_handler() {
-    		settings.B = to_number(this.value);
-    		$$invalidate(1, settings);
+    		curveNumbers.B = to_number(this.value);
+    		$$invalidate(1, curveNumbers);
     	}
 
     	function input2_change_input_handler() {
-    		settings.C = to_number(this.value);
-    		$$invalidate(1, settings);
+    		curveNumbers.C = to_number(this.value);
+    		$$invalidate(1, curveNumbers);
     	}
 
     	function input3_change_input_handler() {
-    		settings.D = to_number(this.value);
-    		$$invalidate(1, settings);
+    		curveNumbers.D = to_number(this.value);
+    		$$invalidate(1, curveNumbers);
     	}
 
     	function input4_change_input_handler() {
-    		settings.E = to_number(this.value);
-    		$$invalidate(1, settings);
+    		curveNumbers.E = to_number(this.value);
+    		$$invalidate(1, curveNumbers);
+    	}
+
+    	function input5_change_input_handler() {
+    		origin.x = to_number(this.value);
+    		$$invalidate(0, origin);
+    	}
+
+    	function input6_change_input_handler() {
+    		origin.y = to_number(this.value);
+    		$$invalidate(0, origin);
     	}
 
     	$$self.$capture_state = () => ({
     		onMount,
-    		draw,
-    		canvas,
-    		ctx,
+    		drawMouseLayer,
+    		drawCurveLayer,
+    		drawGrid,
+    		gridCanvas,
+    		curveCanvas,
+    		mouseCanvas,
+    		grid,
+    		curve,
+    		mouse,
+    		container,
     		CANVAS_HEIGHT,
     		CANVAS_WIDTH,
-    		settings
+    		settings,
+    		origin,
+    		curveNumbers
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ('canvas' in $$props) $$invalidate(0, canvas = $$props.canvas);
-    		if ('ctx' in $$props) ctx = $$props.ctx;
-    		if ('settings' in $$props) $$invalidate(1, settings = $$props.settings);
+    		if ('gridCanvas' in $$props) $$invalidate(2, gridCanvas = $$props.gridCanvas);
+    		if ('curveCanvas' in $$props) $$invalidate(3, curveCanvas = $$props.curveCanvas);
+    		if ('mouseCanvas' in $$props) $$invalidate(4, mouseCanvas = $$props.mouseCanvas);
+    		if ('grid' in $$props) grid = $$props.grid;
+    		if ('curve' in $$props) $$invalidate(6, curve = $$props.curve);
+    		if ('mouse' in $$props) mouse = $$props.mouse;
+    		if ('container' in $$props) $$invalidate(5, container = $$props.container);
+    		if ('settings' in $$props) settings = $$props.settings;
+    		if ('origin' in $$props) $$invalidate(0, origin = $$props.origin);
+    		if ('curveNumbers' in $$props) $$invalidate(1, curveNumbers = $$props.curveNumbers);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
+    	$$self.$$.update = () => {
+    		if ($$self.$$.dirty & /*curve, curveNumbers, origin*/ 67) {
+    			if (curve) {
+    				console.log('updating curve');
+    				curve.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    				drawCurveLayer(curve, curveNumbers, origin);
+    			}
+    		}
+    	};
+
     	return [
-    		canvas,
-    		settings,
-    		canvas_1_binding,
+    		origin,
+    		curveNumbers,
+    		gridCanvas,
+    		curveCanvas,
+    		mouseCanvas,
+    		container,
+    		curve,
+    		canvas0_binding,
+    		canvas1_binding,
+    		canvas2_binding,
+    		div0_binding,
     		input0_change_input_handler,
     		input1_change_input_handler,
     		input2_change_input_handler,
     		input3_change_input_handler,
-    		input4_change_input_handler
+    		input4_change_input_handler,
+    		input5_change_input_handler,
+    		input6_change_input_handler
     	];
     }
 

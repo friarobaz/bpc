@@ -1,51 +1,48 @@
 // @ts-check
-const drawHorizontalLine = (ctx, y, xMax) => {
-  ctx.beginPath()
-  ctx.moveTo(0, y)
-  ctx.lineTo(xMax, y)
-  ctx.stroke()
-}
 
-const drawVerticalLine = (ctx, x, yMax) => {
-  ctx.beginPath()
-  ctx.moveTo(x, 0)
-  ctx.lineTo(x, yMax)
-  ctx.stroke()
-}
-
-const drawGrid = (ctx, height, width, step, color = "black") => {
-  ctx.strokeStyle = color
-  ctx.lineWidth = 1
-
-  for (let x = 0; x < width; x += step) {
-    drawVerticalLine(ctx, x, height)
-  }
-  for (let y = 0; y < height; y += step) {
-    drawHorizontalLine(ctx, y, width)
-  }
-}
-
-const circle = (x, y, ctx, color = "red", radius = 3) => {
+const circle = (ctx, x, y, color = "red", radius = 3) => {
   ctx.fillStyle = color
   ctx.beginPath()
   ctx.arc(x, y, radius, 0, 2 * Math.PI)
   ctx.fill()
 }
 
-const cursorHelper = (x, y, ctx) => {
-  ctx.fillStyle = "red"
-  ctx.fillRect(0, y - 2, 10, 4)
-  ctx.fillRect(x - 2, 0, 4, 10)
+const cursorHelper = (ctx, x, y) => {
+  ctx.setLineDash([5, 3]) /*dashes are 5px and spaces are 3px*/
+  ctx.lineWidth = 0.5
+  ctx.beginPath()
+  ctx.moveTo(x, 0)
+  ctx.lineTo(x, y)
+  ctx.moveTo(0, y)
+  ctx.lineTo(x, y)
+  ctx.stroke()
   ctx.strokeStyle = "black"
-  ctx.strokeText(`${x}`, x + 15, 10)
-  ctx.strokeText(`${y}`, 15, y + 10)
+  ctx.setLineDash([])
+  ctx.lineWidth = 1
+  ctx.strokeText(`${x / 10} km/h`, x + 5, 8)
+  ctx.strokeText(`-${y / 100} m/s`, 0, y + 13)
 }
 
-const findPoints = (myFunction, start = 0, end = 1500, precision = 0.2) => {
+export const findPoints = (
+  myFunction,
+  start = 0,
+  end = 1500,
+  precision = 0.2,
+  origin = { x: 0, y: 0 }
+) => {
   let points = []
-  for (let i = start; i < end; i += precision) {
-    points.push({ x: i, y: myFunction(i) })
+  let bestGlide = 0
+  let bestGlideIndex = 0
+  for (let x = start; x < end; x += precision) {
+    const y = myFunction(x)
+    const glide = (x - origin.x) / (y - origin.y)
+    points.push({ x, y, glide, bestGlide: false })
+    if (glide > bestGlide) {
+      bestGlide = glide
+      bestGlideIndex = points.length - 1
+    }
   }
+  points[bestGlideIndex].bestGlide = true
   return points
 }
 
@@ -54,19 +51,15 @@ const findPoints = (myFunction, start = 0, end = 1500, precision = 0.2) => {
  * @param points
  * @param {string} color
  */
-const drawCurve = (
+export const drawCurve = (
   ctx,
   points,
   color = "red",
   lineWidth = 2,
-  showPoints = false
+  origin,
+  showGlide = true
 ) => {
   ctx.strokeStyle = color
-  if (showPoints) {
-    for (const point of points) {
-      circle(point.x, point.y, ctx, color)
-    }
-  }
   ctx.beginPath()
   ctx.moveTo(points[0].x, points[0].y)
 
@@ -75,54 +68,41 @@ const drawCurve = (
   }
   ctx.lineWidth = lineWidth
   ctx.stroke()
+  if (showGlide) {
+    const bestGlidePoint = points.filter((x) => x.bestGlide)[0]
+    circle(ctx, bestGlidePoint.x, bestGlidePoint.y, `red`, 5)
+    drawGlide(ctx, bestGlidePoint.x, bestGlidePoint.y, origin)
+  }
 }
 
-const drawGlide = (ctx, x, y) => {
+export const drawGlide = (ctx, x, y, origin) => {
+  if (!origin) return
+  const glide = (x - origin.x) / (y - origin.y)
   ctx.beginPath()
-  ctx.moveTo(0, 0)
-  ctx.lineTo(x * 10, y * 10)
+  ctx.moveTo(origin.x, origin.y)
+  ctx.lineTo(x + (x - origin.x) * 5, y + (y - origin.y) * 5)
+  //ctx.lineTo(800, 800 / glide)
   ctx.strokeStyle = "red"
   ctx.lineWidth = 1
   ctx.stroke()
 }
 
-export const draw = (ctx, settings) => {
-  ctx.clearRect(0, 0, settings.width, settings.height)
-  drawGrid(ctx, settings.height, settings.width, 10, "rgba(0, 100, 255, 0.15)")
-  drawGrid(ctx, settings.height, settings.width, 50, "rgba(255, 150, 0, 0.4)")
-  cursorHelper(settings.mouseX, settings.mouseY, ctx)
-
-  let testFunction = (i) => {
-    return (
-      Math.cos((i - settings.D) / settings.C) * settings.A +
-      settings.E +
-      i / settings.B
-    )
-  }
-  let curvePoints = findPoints(testFunction, 150, 460, 10)
-  let lightPoints = findPoints(testFunction, 0, 1500, 10)
-  drawCurve(ctx, lightPoints, "rgba(0,0,255,0.1)", 5)
-  drawCurve(ctx, curvePoints, "blue", 5)
-  if (settings.mouseX < 450 && settings.mouseX > 150) {
-    circle(settings.mouseX, testFunction(settings.mouseX), ctx, "red")
-    drawGlide(ctx, settings.mouseX, testFunction(settings.mouseX))
-  }
+const distance = (pointA, pointB) => {
+  const a = pointA.x - pointB.x
+  const b = pointA.y - pointB.y
+  return Math.sqrt(a * a + b * b)
 }
 
-const rien = (ctx) => {
-  const points = [
-    { x: 20, y: 1.5 },
-    { x: 30, y: 1 },
-    { x: 35, y: 1.3 },
-    { x: 40, y: 1.7 },
-    { x: 50, y: 2.5 },
-  ]
-  const pointsHeavy = points.map((p) => ({ x: p.x * 2, y: p.y * 2 }))
-  drawPoints(ctx, points)
-  drawPoints(ctx, pointsHeavy, "green")
-  ctx.beginPath()
-  ctx.strokeStyle = "red"
-  ctx.moveTo(0, 0)
-  ctx.lineTo(points[3].x * 10, points[3].y * 10)
-  ctx.stroke()
+export const drawMouseLayer = (ctx, settings) => {
+  cursorHelper(ctx, settings.mouse.x, settings.mouse.y)
+}
+
+export const drawCurveLayer = (ctx, curve, origin) => {
+  const curveFunction = (i) => {
+    return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
+  }
+  const mainCurvePoints = findPoints(curveFunction, 150, 460, 2, origin)
+  const allCurvePoints = findPoints(curveFunction, 0, 1500, 10)
+  drawCurve(ctx, allCurvePoints, "rgba(0,0,255,0.1)", 5, origin, false)
+  drawCurve(ctx, mainCurvePoints, "blue", 5, origin)
 }
