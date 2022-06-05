@@ -517,262 +517,156 @@ var app = (function () {
     const { console: console_1 } = globals;
     const file = "src/Canvas.svelte";
 
-    function create_fragment(ctx) {
-    	let div0;
-    	let canvas0;
+    // (85:4) {#if showCurveControls}
+    function create_if_block(ctx) {
     	let t0;
-    	let canvas1;
-    	let t1;
-    	let canvas2;
-    	let t2;
-    	let br0;
-    	let t3;
-    	let div3;
-    	let t4;
     	let input0;
-    	let t5;
+    	let t1;
     	let input1;
-    	let t6;
+    	let t2;
     	let input2;
-    	let t7;
+    	let t3;
     	let input3;
-    	let t8;
+    	let t4;
     	let input4;
+    	let t5;
+    	let br0;
+    	let t6;
+    	let t7_value = /*curveNumbers*/ ctx[1].A + "";
+    	let t7;
+    	let t8;
+    	let t9_value = /*curveNumbers*/ ctx[1].B + "";
     	let t9;
-    	let br1;
     	let t10;
-    	let t11_value = /*curveNumbers*/ ctx[1].A + "";
+    	let t11_value = /*curveNumbers*/ ctx[1].C + "";
     	let t11;
     	let t12;
-    	let t13_value = /*curveNumbers*/ ctx[1].B + "";
+    	let t13_value = /*curveNumbers*/ ctx[1].D + "";
     	let t13;
     	let t14;
-    	let t15_value = /*curveNumbers*/ ctx[1].C + "";
+    	let t15_value = /*curveNumbers*/ ctx[1].E + "";
     	let t15;
     	let t16;
-    	let t17_value = /*curveNumbers*/ ctx[1].D + "";
+    	let br1;
     	let t17;
+    	let div;
     	let t18;
-    	let t19_value = /*curveNumbers*/ ctx[1].E + "";
-    	let t19;
-    	let t20;
-    	let br2;
-    	let t21;
-    	let div1;
-    	let t22;
     	let input5;
-    	let t23;
-    	let t24_value = /*origin*/ ctx[0].x + "";
-    	let t24;
-    	let t25;
-    	let br3;
-    	let t26;
-    	let input6;
-    	let t27;
-    	let t28_value = /*origin*/ ctx[0].y + "";
-    	let t28;
-    	let t29;
-    	let div2;
-    	let t30;
-    	let input7;
     	let mounted;
     	let dispose;
 
     	const block = {
     		c: function create() {
-    			div0 = element("div");
-    			canvas0 = element("canvas");
-    			t0 = space();
-    			canvas1 = element("canvas");
-    			t1 = space();
-    			canvas2 = element("canvas");
-    			t2 = space();
-    			br0 = element("br");
-    			t3 = space();
-    			div3 = element("div");
-    			t4 = text("A: ");
+    			t0 = text("A: ");
     			input0 = element("input");
-    			t5 = text("\n    B: ");
+    			t1 = text("\n            B: ");
     			input1 = element("input");
-    			t6 = text("\n    C: ");
+    			t2 = text("\n            C: ");
     			input2 = element("input");
-    			t7 = text("\n    D:");
+    			t3 = text("\n            D:");
     			input3 = element("input");
-    			t8 = text("\n    E:");
+    			t4 = text("\n            E:");
     			input4 = element("input");
-    			t9 = space();
-    			br1 = element("br");
-    			t10 = text("\n    A: ");
+    			t5 = space();
+    			br0 = element("br");
+    			t6 = text("\n            A: ");
+    			t7 = text(t7_value);
+    			t8 = text("\n            B: ");
+    			t9 = text(t9_value);
+    			t10 = text("\n            C: ");
     			t11 = text(t11_value);
-    			t12 = text("\n    B: ");
+    			t12 = text("\n            D: ");
     			t13 = text(t13_value);
-    			t14 = text("\n    C: ");
+    			t14 = text("\n            E: ");
     			t15 = text(t15_value);
-    			t16 = text("\n    D: ");
-    			t17 = text(t17_value);
-    			t18 = text("\n    E: ");
-    			t19 = text(t19_value);
-    			t20 = space();
-    			br2 = element("br");
-    			t21 = space();
-    			div1 = element("div");
-    			t22 = text("Vent de face:");
+    			t16 = space();
+    			br1 = element("br");
+    			t17 = space();
+    			div = element("div");
+    			t18 = text("Montrer toute la courbe : \n                ");
     			input5 = element("input");
-    			t23 = space();
-    			t24 = text(t24_value);
-    			t25 = space();
-    			br3 = element("br");
-    			t26 = text("\n        Thermique:");
-    			input6 = element("input");
-    			t27 = space();
-    			t28 = text(t28_value);
-    			t29 = space();
-    			div2 = element("div");
-    			t30 = text("Montrer toute la courbe : \n        ");
-    			input7 = element("input");
-    			attr_dev(canvas0, "id", "grid");
-    			attr_dev(canvas0, "class", "svelte-19yrjb4");
-    			add_location(canvas0, file, 59, 1, 1944);
-    			attr_dev(canvas1, "id", "curve");
-    			attr_dev(canvas1, "class", "svelte-19yrjb4");
-    			add_location(canvas1, file, 60, 1, 1996);
-    			attr_dev(canvas2, "id", "mouse");
-    			attr_dev(canvas2, "class", "svelte-19yrjb4");
-    			add_location(canvas2, file, 61, 1, 2050);
-    			attr_dev(div0, "id", "container");
-    			attr_dev(div0, "class", "svelte-19yrjb4");
-    			add_location(div0, file, 58, 0, 1900);
-    			add_location(br0, file, 64, 0, 2111);
     			attr_dev(input0, "type", "range");
     			attr_dev(input0, "min", "0");
     			attr_dev(input0, "max", "100");
-    			add_location(input0, file, 66, 7, 2143);
+    			add_location(input0, file, 87, 15, 2781);
     			attr_dev(input1, "type", "range");
     			attr_dev(input1, "min", "1");
     			attr_dev(input1, "max", "10");
     			attr_dev(input1, "step", "0.1");
-    			add_location(input1, file, 67, 7, 2213);
+    			add_location(input1, file, 88, 15, 2859);
     			attr_dev(input2, "type", "range");
     			attr_dev(input2, "min", "20");
     			attr_dev(input2, "max", "120");
-    			add_location(input2, file, 68, 7, 2292);
+    			add_location(input2, file, 89, 15, 2946);
     			attr_dev(input3, "type", "range");
     			attr_dev(input3, "min", "0");
-    			attr_dev(input3, "max", "500");
-    			add_location(input3, file, 69, 6, 2363);
+    			attr_dev(input3, "max", "1000");
+    			add_location(input3, file, 90, 14, 3025);
     			attr_dev(input4, "type", "range");
     			attr_dev(input4, "min", "0");
     			attr_dev(input4, "max", "200");
-    			add_location(input4, file, 70, 6, 2433);
-    			add_location(br1, file, 71, 4, 2501);
-    			add_location(br2, file, 77, 4, 2630);
-    			attr_dev(input5, "type", "range");
-    			attr_dev(input5, "min", "-200");
-    			attr_dev(input5, "max", "200");
-    			add_location(input5, file, 79, 21, 2666);
-    			add_location(br3, file, 79, 93, 2738);
-    			attr_dev(input6, "type", "range");
-    			attr_dev(input6, "min", "-100");
-    			attr_dev(input6, "max", "100");
-    			add_location(input6, file, 80, 18, 2761);
-    			add_location(div1, file, 78, 4, 2639);
-    			attr_dev(input7, "type", "checkbox");
-    			add_location(input7, file, 84, 8, 2897);
-    			add_location(div2, file, 82, 4, 2848);
-    			attr_dev(div3, "id", "controls");
-    			attr_dev(div3, "class", "svelte-19yrjb4");
-    			add_location(div3, file, 65, 0, 2116);
-    		},
-    		l: function claim(nodes) {
-    			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+    			add_location(input4, file, 91, 14, 3104);
+    			add_location(br0, file, 92, 12, 3180);
+    			add_location(br1, file, 98, 12, 3357);
+    			attr_dev(input5, "type", "checkbox");
+    			add_location(input5, file, 102, 16, 3452);
+    			add_location(div, file, 100, 12, 3387);
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div0, anchor);
-    			append_dev(div0, canvas0);
-    			/*canvas0_binding*/ ctx[8](canvas0);
-    			append_dev(div0, t0);
-    			append_dev(div0, canvas1);
-    			/*canvas1_binding*/ ctx[9](canvas1);
-    			append_dev(div0, t1);
-    			append_dev(div0, canvas2);
-    			/*canvas2_binding*/ ctx[10](canvas2);
-    			/*div0_binding*/ ctx[11](div0);
-    			insert_dev(target, t2, anchor);
-    			insert_dev(target, br0, anchor);
-    			insert_dev(target, t3, anchor);
-    			insert_dev(target, div3, anchor);
-    			append_dev(div3, t4);
-    			append_dev(div3, input0);
+    			insert_dev(target, t0, anchor);
+    			insert_dev(target, input0, anchor);
     			set_input_value(input0, /*curveNumbers*/ ctx[1].A);
-    			append_dev(div3, t5);
-    			append_dev(div3, input1);
+    			insert_dev(target, t1, anchor);
+    			insert_dev(target, input1, anchor);
     			set_input_value(input1, /*curveNumbers*/ ctx[1].B);
-    			append_dev(div3, t6);
-    			append_dev(div3, input2);
+    			insert_dev(target, t2, anchor);
+    			insert_dev(target, input2, anchor);
     			set_input_value(input2, /*curveNumbers*/ ctx[1].C);
-    			append_dev(div3, t7);
-    			append_dev(div3, input3);
+    			insert_dev(target, t3, anchor);
+    			insert_dev(target, input3, anchor);
     			set_input_value(input3, /*curveNumbers*/ ctx[1].D);
-    			append_dev(div3, t8);
-    			append_dev(div3, input4);
+    			insert_dev(target, t4, anchor);
+    			insert_dev(target, input4, anchor);
     			set_input_value(input4, /*curveNumbers*/ ctx[1].E);
-    			append_dev(div3, t9);
-    			append_dev(div3, br1);
-    			append_dev(div3, t10);
-    			append_dev(div3, t11);
-    			append_dev(div3, t12);
-    			append_dev(div3, t13);
-    			append_dev(div3, t14);
-    			append_dev(div3, t15);
-    			append_dev(div3, t16);
-    			append_dev(div3, t17);
-    			append_dev(div3, t18);
-    			append_dev(div3, t19);
-    			append_dev(div3, t20);
-    			append_dev(div3, br2);
-    			append_dev(div3, t21);
-    			append_dev(div3, div1);
-    			append_dev(div1, t22);
-    			append_dev(div1, input5);
-    			set_input_value(input5, /*origin*/ ctx[0].x);
-    			append_dev(div1, t23);
-    			append_dev(div1, t24);
-    			append_dev(div1, t25);
-    			append_dev(div1, br3);
-    			append_dev(div1, t26);
-    			append_dev(div1, input6);
-    			set_input_value(input6, /*origin*/ ctx[0].y);
-    			append_dev(div1, t27);
-    			append_dev(div1, t28);
-    			append_dev(div3, t29);
-    			append_dev(div3, div2);
-    			append_dev(div2, t30);
-    			append_dev(div2, input7);
-    			input7.checked = /*showEntireCurve*/ ctx[2];
+    			insert_dev(target, t5, anchor);
+    			insert_dev(target, br0, anchor);
+    			insert_dev(target, t6, anchor);
+    			insert_dev(target, t7, anchor);
+    			insert_dev(target, t8, anchor);
+    			insert_dev(target, t9, anchor);
+    			insert_dev(target, t10, anchor);
+    			insert_dev(target, t11, anchor);
+    			insert_dev(target, t12, anchor);
+    			insert_dev(target, t13, anchor);
+    			insert_dev(target, t14, anchor);
+    			insert_dev(target, t15, anchor);
+    			insert_dev(target, t16, anchor);
+    			insert_dev(target, br1, anchor);
+    			insert_dev(target, t17, anchor);
+    			insert_dev(target, div, anchor);
+    			append_dev(div, t18);
+    			append_dev(div, input5);
+    			input5.checked = /*showEntireCurve*/ ctx[2];
 
     			if (!mounted) {
     				dispose = [
-    					listen_dev(input0, "change", /*input0_change_input_handler*/ ctx[12]),
-    					listen_dev(input0, "input", /*input0_change_input_handler*/ ctx[12]),
-    					listen_dev(input1, "change", /*input1_change_input_handler*/ ctx[13]),
-    					listen_dev(input1, "input", /*input1_change_input_handler*/ ctx[13]),
-    					listen_dev(input2, "change", /*input2_change_input_handler*/ ctx[14]),
-    					listen_dev(input2, "input", /*input2_change_input_handler*/ ctx[14]),
-    					listen_dev(input3, "change", /*input3_change_input_handler*/ ctx[15]),
-    					listen_dev(input3, "input", /*input3_change_input_handler*/ ctx[15]),
-    					listen_dev(input4, "change", /*input4_change_input_handler*/ ctx[16]),
-    					listen_dev(input4, "input", /*input4_change_input_handler*/ ctx[16]),
-    					listen_dev(input5, "change", /*input5_change_input_handler*/ ctx[17]),
-    					listen_dev(input5, "input", /*input5_change_input_handler*/ ctx[17]),
-    					listen_dev(input6, "change", /*input6_change_input_handler*/ ctx[18]),
-    					listen_dev(input6, "input", /*input6_change_input_handler*/ ctx[18]),
-    					listen_dev(input7, "change", /*input7_change_handler*/ ctx[19])
+    					listen_dev(input0, "change", /*input0_change_input_handler_1*/ ctx[17]),
+    					listen_dev(input0, "input", /*input0_change_input_handler_1*/ ctx[17]),
+    					listen_dev(input1, "change", /*input1_change_input_handler_1*/ ctx[18]),
+    					listen_dev(input1, "input", /*input1_change_input_handler_1*/ ctx[18]),
+    					listen_dev(input2, "change", /*input2_change_input_handler*/ ctx[19]),
+    					listen_dev(input2, "input", /*input2_change_input_handler*/ ctx[19]),
+    					listen_dev(input3, "change", /*input3_change_input_handler*/ ctx[20]),
+    					listen_dev(input3, "input", /*input3_change_input_handler*/ ctx[20]),
+    					listen_dev(input4, "change", /*input4_change_input_handler*/ ctx[21]),
+    					listen_dev(input4, "input", /*input4_change_input_handler*/ ctx[21]),
+    					listen_dev(input5, "change", /*input5_change_handler*/ ctx[22])
     				];
 
     				mounted = true;
     			}
     		},
-    		p: function update(ctx, [dirty]) {
+    		p: function update(ctx, dirty) {
     			if (dirty & /*curveNumbers*/ 2) {
     				set_input_value(input0, /*curveNumbers*/ ctx[1].A);
     			}
@@ -793,40 +687,268 @@ var app = (function () {
     				set_input_value(input4, /*curveNumbers*/ ctx[1].E);
     			}
 
-    			if (dirty & /*curveNumbers*/ 2 && t11_value !== (t11_value = /*curveNumbers*/ ctx[1].A + "")) set_data_dev(t11, t11_value);
-    			if (dirty & /*curveNumbers*/ 2 && t13_value !== (t13_value = /*curveNumbers*/ ctx[1].B + "")) set_data_dev(t13, t13_value);
-    			if (dirty & /*curveNumbers*/ 2 && t15_value !== (t15_value = /*curveNumbers*/ ctx[1].C + "")) set_data_dev(t15, t15_value);
-    			if (dirty & /*curveNumbers*/ 2 && t17_value !== (t17_value = /*curveNumbers*/ ctx[1].D + "")) set_data_dev(t17, t17_value);
-    			if (dirty & /*curveNumbers*/ 2 && t19_value !== (t19_value = /*curveNumbers*/ ctx[1].E + "")) set_data_dev(t19, t19_value);
-
-    			if (dirty & /*origin*/ 1) {
-    				set_input_value(input5, /*origin*/ ctx[0].x);
-    			}
-
-    			if (dirty & /*origin*/ 1 && t24_value !== (t24_value = /*origin*/ ctx[0].x + "")) set_data_dev(t24, t24_value);
-
-    			if (dirty & /*origin*/ 1) {
-    				set_input_value(input6, /*origin*/ ctx[0].y);
-    			}
-
-    			if (dirty & /*origin*/ 1 && t28_value !== (t28_value = /*origin*/ ctx[0].y + "")) set_data_dev(t28, t28_value);
+    			if (dirty & /*curveNumbers*/ 2 && t7_value !== (t7_value = /*curveNumbers*/ ctx[1].A + "")) set_data_dev(t7, t7_value);
+    			if (dirty & /*curveNumbers*/ 2 && t9_value !== (t9_value = /*curveNumbers*/ ctx[1].B + "")) set_data_dev(t9, t9_value);
+    			if (dirty & /*curveNumbers*/ 2 && t11_value !== (t11_value = /*curveNumbers*/ ctx[1].C + "")) set_data_dev(t11, t11_value);
+    			if (dirty & /*curveNumbers*/ 2 && t13_value !== (t13_value = /*curveNumbers*/ ctx[1].D + "")) set_data_dev(t13, t13_value);
+    			if (dirty & /*curveNumbers*/ 2 && t15_value !== (t15_value = /*curveNumbers*/ ctx[1].E + "")) set_data_dev(t15, t15_value);
 
     			if (dirty & /*showEntireCurve*/ 4) {
-    				input7.checked = /*showEntireCurve*/ ctx[2];
+    				input5.checked = /*showEntireCurve*/ ctx[2];
+    			}
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(t0);
+    			if (detaching) detach_dev(input0);
+    			if (detaching) detach_dev(t1);
+    			if (detaching) detach_dev(input1);
+    			if (detaching) detach_dev(t2);
+    			if (detaching) detach_dev(input2);
+    			if (detaching) detach_dev(t3);
+    			if (detaching) detach_dev(input3);
+    			if (detaching) detach_dev(t4);
+    			if (detaching) detach_dev(input4);
+    			if (detaching) detach_dev(t5);
+    			if (detaching) detach_dev(br0);
+    			if (detaching) detach_dev(t6);
+    			if (detaching) detach_dev(t7);
+    			if (detaching) detach_dev(t8);
+    			if (detaching) detach_dev(t9);
+    			if (detaching) detach_dev(t10);
+    			if (detaching) detach_dev(t11);
+    			if (detaching) detach_dev(t12);
+    			if (detaching) detach_dev(t13);
+    			if (detaching) detach_dev(t14);
+    			if (detaching) detach_dev(t15);
+    			if (detaching) detach_dev(t16);
+    			if (detaching) detach_dev(br1);
+    			if (detaching) detach_dev(t17);
+    			if (detaching) detach_dev(div);
+    			mounted = false;
+    			run_all(dispose);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block.name,
+    		type: "if",
+    		source: "(85:4) {#if showCurveControls}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    function create_fragment(ctx) {
+    	let div0;
+    	let canvas0;
+    	let t0;
+    	let canvas1;
+    	let t1;
+    	let canvas2;
+    	let t2;
+    	let br0;
+    	let t3;
+    	let div2;
+    	let div1;
+    	let t4;
+    	let input0;
+    	let t5;
+    	let t6_value = /*origin*/ ctx[0].x + "";
+    	let t6;
+    	let t7;
+    	let br1;
+    	let t8;
+    	let input1;
+    	let t9;
+    	let t10_value = /*origin*/ ctx[0].y + "";
+    	let t10;
+    	let t11;
+    	let br2;
+    	let t12;
+    	let button;
+    	let t14;
+    	let br3;
+    	let t15;
+    	let input2;
+    	let t16;
+    	let br4;
+    	let t17;
+    	let mounted;
+    	let dispose;
+    	let if_block = /*showCurveControls*/ ctx[7] && create_if_block(ctx);
+
+    	const block = {
+    		c: function create() {
+    			div0 = element("div");
+    			canvas0 = element("canvas");
+    			t0 = space();
+    			canvas1 = element("canvas");
+    			t1 = space();
+    			canvas2 = element("canvas");
+    			t2 = space();
+    			br0 = element("br");
+    			t3 = space();
+    			div2 = element("div");
+    			div1 = element("div");
+    			t4 = text("Vent de face:");
+    			input0 = element("input");
+    			t5 = space();
+    			t6 = text(t6_value);
+    			t7 = space();
+    			br1 = element("br");
+    			t8 = text("\n        Thermique:");
+    			input1 = element("input");
+    			t9 = space();
+    			t10 = text(t10_value);
+    			t11 = space();
+    			br2 = element("br");
+    			t12 = space();
+    			button = element("button");
+    			button.textContent = "Reinitialiser";
+    			t14 = space();
+    			br3 = element("br");
+    			t15 = text("\n    Modifier la polaire : \n");
+    			input2 = element("input");
+    			t16 = space();
+    			br4 = element("br");
+    			t17 = space();
+    			if (if_block) if_block.c();
+    			attr_dev(canvas0, "id", "grid");
+    			attr_dev(canvas0, "class", "svelte-wzchmf");
+    			add_location(canvas0, file, 66, 1, 2167);
+    			attr_dev(canvas1, "id", "curve");
+    			attr_dev(canvas1, "class", "svelte-wzchmf");
+    			add_location(canvas1, file, 67, 1, 2219);
+    			attr_dev(canvas2, "id", "mouse");
+    			attr_dev(canvas2, "class", "svelte-wzchmf");
+    			add_location(canvas2, file, 68, 1, 2273);
+    			attr_dev(div0, "id", "container");
+    			attr_dev(div0, "class", "svelte-wzchmf");
+    			add_location(div0, file, 65, 0, 2123);
+    			add_location(br0, file, 71, 0, 2334);
+    			attr_dev(input0, "type", "range");
+    			attr_dev(input0, "min", "-200");
+    			attr_dev(input0, "max", "200");
+    			add_location(input0, file, 75, 21, 2387);
+    			add_location(br1, file, 75, 93, 2459);
+    			attr_dev(input1, "type", "range");
+    			attr_dev(input1, "min", "-100");
+    			attr_dev(input1, "max", "100");
+    			add_location(input1, file, 76, 18, 2482);
+    			add_location(div1, file, 74, 0, 2360);
+    			add_location(br2, file, 78, 4, 2569);
+    			add_location(button, file, 79, 4, 2578);
+    			add_location(br3, file, 80, 4, 2630);
+    			attr_dev(input2, "type", "checkbox");
+    			add_location(input2, file, 82, 0, 2662);
+    			add_location(br4, file, 83, 0, 2719);
+    			attr_dev(div2, "id", "controls");
+    			attr_dev(div2, "class", "svelte-wzchmf");
+    			add_location(div2, file, 72, 0, 2339);
+    		},
+    		l: function claim(nodes) {
+    			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, div0, anchor);
+    			append_dev(div0, canvas0);
+    			/*canvas0_binding*/ ctx[10](canvas0);
+    			append_dev(div0, t0);
+    			append_dev(div0, canvas1);
+    			/*canvas1_binding*/ ctx[11](canvas1);
+    			append_dev(div0, t1);
+    			append_dev(div0, canvas2);
+    			/*canvas2_binding*/ ctx[12](canvas2);
+    			/*div0_binding*/ ctx[13](div0);
+    			insert_dev(target, t2, anchor);
+    			insert_dev(target, br0, anchor);
+    			insert_dev(target, t3, anchor);
+    			insert_dev(target, div2, anchor);
+    			append_dev(div2, div1);
+    			append_dev(div1, t4);
+    			append_dev(div1, input0);
+    			set_input_value(input0, /*origin*/ ctx[0].x);
+    			append_dev(div1, t5);
+    			append_dev(div1, t6);
+    			append_dev(div1, t7);
+    			append_dev(div1, br1);
+    			append_dev(div1, t8);
+    			append_dev(div1, input1);
+    			set_input_value(input1, /*origin*/ ctx[0].y);
+    			append_dev(div1, t9);
+    			append_dev(div1, t10);
+    			append_dev(div2, t11);
+    			append_dev(div2, br2);
+    			append_dev(div2, t12);
+    			append_dev(div2, button);
+    			append_dev(div2, t14);
+    			append_dev(div2, br3);
+    			append_dev(div2, t15);
+    			append_dev(div2, input2);
+    			input2.checked = /*showCurveControls*/ ctx[7];
+    			append_dev(div2, t16);
+    			append_dev(div2, br4);
+    			append_dev(div2, t17);
+    			if (if_block) if_block.m(div2, null);
+
+    			if (!mounted) {
+    				dispose = [
+    					listen_dev(input0, "change", /*input0_change_input_handler*/ ctx[14]),
+    					listen_dev(input0, "input", /*input0_change_input_handler*/ ctx[14]),
+    					listen_dev(input1, "change", /*input1_change_input_handler*/ ctx[15]),
+    					listen_dev(input1, "input", /*input1_change_input_handler*/ ctx[15]),
+    					listen_dev(button, "click", /*reset*/ ctx[8], false, false, false),
+    					listen_dev(input2, "change", /*input2_change_handler*/ ctx[16])
+    				];
+
+    				mounted = true;
+    			}
+    		},
+    		p: function update(ctx, [dirty]) {
+    			if (dirty & /*origin*/ 1) {
+    				set_input_value(input0, /*origin*/ ctx[0].x);
+    			}
+
+    			if (dirty & /*origin*/ 1 && t6_value !== (t6_value = /*origin*/ ctx[0].x + "")) set_data_dev(t6, t6_value);
+
+    			if (dirty & /*origin*/ 1) {
+    				set_input_value(input1, /*origin*/ ctx[0].y);
+    			}
+
+    			if (dirty & /*origin*/ 1 && t10_value !== (t10_value = /*origin*/ ctx[0].y + "")) set_data_dev(t10, t10_value);
+
+    			if (dirty & /*showCurveControls*/ 128) {
+    				input2.checked = /*showCurveControls*/ ctx[7];
+    			}
+
+    			if (/*showCurveControls*/ ctx[7]) {
+    				if (if_block) {
+    					if_block.p(ctx, dirty);
+    				} else {
+    					if_block = create_if_block(ctx);
+    					if_block.c();
+    					if_block.m(div2, null);
+    				}
+    			} else if (if_block) {
+    				if_block.d(1);
+    				if_block = null;
     			}
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div0);
-    			/*canvas0_binding*/ ctx[8](null);
-    			/*canvas1_binding*/ ctx[9](null);
-    			/*canvas2_binding*/ ctx[10](null);
-    			/*div0_binding*/ ctx[11](null);
+    			/*canvas0_binding*/ ctx[10](null);
+    			/*canvas1_binding*/ ctx[11](null);
+    			/*canvas2_binding*/ ctx[12](null);
+    			/*div0_binding*/ ctx[13](null);
     			if (detaching) detach_dev(t2);
     			if (detaching) detach_dev(br0);
     			if (detaching) detach_dev(t3);
-    			if (detaching) detach_dev(div3);
+    			if (detaching) detach_dev(div2);
+    			if (if_block) if_block.d();
     			mounted = false;
     			run_all(dispose);
     		}
@@ -855,10 +977,12 @@ var app = (function () {
     		height: CANVAS_HEIGHT
     	};
 
+    	const defaultCurveNumbers = { A: 40, B: 3, C: 85, D: 17, E: 100 };
     	let mouseCoordinates = { x: 0, y: 0 };
     	let origin = { x: 0, y: 0 };
-    	let curveNumbers = { A: 40, B: 3, C: 85, D: 17, E: 100 };
+    	let curveNumbers = structuredClone(defaultCurveNumbers);
     	let showEntireCurve = false;
+    	let showCurveControls = false;
 
     	onMount(() => {
     		$$invalidate(3, gridCanvas.width = CANVAS_WIDTH, gridCanvas);
@@ -868,7 +992,7 @@ var app = (function () {
     		$$invalidate(4, curveCanvas.height = CANVAS_HEIGHT, curveCanvas);
     		$$invalidate(5, mouseCanvas.height = CANVAS_HEIGHT, mouseCanvas);
     		grid = gridCanvas.getContext("2d");
-    		$$invalidate(7, curve = curveCanvas.getContext("2d"));
+    		$$invalidate(9, curve = curveCanvas.getContext("2d"));
     		mouse = mouseCanvas.getContext("2d");
     		drawGrid(grid, CANVAS_HEIGHT, CANVAS_WIDTH, 10, "rgba(0, 100, 255, 0.15)");
     		drawGrid(grid, CANVAS_HEIGHT, CANVAS_WIDTH, 50, "rgba(255, 150, 0, 0.4)");
@@ -886,6 +1010,11 @@ var app = (function () {
     			console.log('updating mouse');
     			drawMouseLayer(mouse, mouseCoordinates, origin, curveNumbers);
     		}
+    	};
+
+    	const reset = () => {
+    		$$invalidate(0, origin = { x: 0, y: 0 });
+    		$$invalidate(1, curveNumbers = structuredClone(defaultCurveNumbers));
     	};
 
     	const writable_props = [];
@@ -923,11 +1052,26 @@ var app = (function () {
     	}
 
     	function input0_change_input_handler() {
+    		origin.x = to_number(this.value);
+    		$$invalidate(0, origin);
+    	}
+
+    	function input1_change_input_handler() {
+    		origin.y = to_number(this.value);
+    		$$invalidate(0, origin);
+    	}
+
+    	function input2_change_handler() {
+    		showCurveControls = this.checked;
+    		$$invalidate(7, showCurveControls);
+    	}
+
+    	function input0_change_input_handler_1() {
     		curveNumbers.A = to_number(this.value);
     		$$invalidate(1, curveNumbers);
     	}
 
-    	function input1_change_input_handler() {
+    	function input1_change_input_handler_1() {
     		curveNumbers.B = to_number(this.value);
     		$$invalidate(1, curveNumbers);
     	}
@@ -947,17 +1091,7 @@ var app = (function () {
     		$$invalidate(1, curveNumbers);
     	}
 
-    	function input5_change_input_handler() {
-    		origin.x = to_number(this.value);
-    		$$invalidate(0, origin);
-    	}
-
-    	function input6_change_input_handler() {
-    		origin.y = to_number(this.value);
-    		$$invalidate(0, origin);
-    	}
-
-    	function input7_change_handler() {
+    	function input5_change_handler() {
     		showEntireCurve = this.checked;
     		$$invalidate(2, showEntireCurve);
     	}
@@ -977,10 +1111,13 @@ var app = (function () {
     		CANVAS_HEIGHT,
     		CANVAS_WIDTH,
     		settings,
+    		defaultCurveNumbers,
     		mouseCoordinates,
     		origin,
     		curveNumbers,
-    		showEntireCurve
+    		showEntireCurve,
+    		showCurveControls,
+    		reset
     	});
 
     	$$self.$inject_state = $$props => {
@@ -988,7 +1125,7 @@ var app = (function () {
     		if ('curveCanvas' in $$props) $$invalidate(4, curveCanvas = $$props.curveCanvas);
     		if ('mouseCanvas' in $$props) $$invalidate(5, mouseCanvas = $$props.mouseCanvas);
     		if ('grid' in $$props) grid = $$props.grid;
-    		if ('curve' in $$props) $$invalidate(7, curve = $$props.curve);
+    		if ('curve' in $$props) $$invalidate(9, curve = $$props.curve);
     		if ('mouse' in $$props) mouse = $$props.mouse;
     		if ('container' in $$props) $$invalidate(6, container = $$props.container);
     		if ('settings' in $$props) settings = $$props.settings;
@@ -996,6 +1133,7 @@ var app = (function () {
     		if ('origin' in $$props) $$invalidate(0, origin = $$props.origin);
     		if ('curveNumbers' in $$props) $$invalidate(1, curveNumbers = $$props.curveNumbers);
     		if ('showEntireCurve' in $$props) $$invalidate(2, showEntireCurve = $$props.showEntireCurve);
+    		if ('showCurveControls' in $$props) $$invalidate(7, showCurveControls = $$props.showCurveControls);
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -1003,7 +1141,7 @@ var app = (function () {
     	}
 
     	$$self.$$.update = () => {
-    		if ($$self.$$.dirty & /*curve, curveNumbers, origin, showEntireCurve*/ 135) {
+    		if ($$self.$$.dirty & /*curve, curveNumbers, origin, showEntireCurve*/ 519) {
     			if (curve) {
     				console.log('updating curve');
     				curve.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -1020,6 +1158,8 @@ var app = (function () {
     		curveCanvas,
     		mouseCanvas,
     		container,
+    		showCurveControls,
+    		reset,
     		curve,
     		canvas0_binding,
     		canvas1_binding,
@@ -1027,12 +1167,13 @@ var app = (function () {
     		div0_binding,
     		input0_change_input_handler,
     		input1_change_input_handler,
+    		input2_change_handler,
+    		input0_change_input_handler_1,
+    		input1_change_input_handler_1,
     		input2_change_input_handler,
     		input3_change_input_handler,
     		input4_change_input_handler,
-    		input5_change_input_handler,
-    		input6_change_input_handler,
-    		input7_change_handler
+    		input5_change_handler
     	];
     }
 
