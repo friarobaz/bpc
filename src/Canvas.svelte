@@ -3,8 +3,8 @@
     import {drawMouseLayer, drawCurveLayer} from './draw'
     import {drawGrid} from './grid'
     let gridCanvas, curveCanvas, mouseCanvas, grid, curve, mouse, container
-    const CANVAS_HEIGHT = window.innerHeight - 200
-    const CANVAS_WIDTH = window.innerWidth - 100
+    const CANVAS_HEIGHT = window.innerHeight - 400
+    const CANVAS_WIDTH = window.innerWidth - 700
     
     let settings = {
         width: CANVAS_WIDTH,
@@ -22,7 +22,10 @@
     let curveNumbers = structuredClone(defaultCurveNumbers)
     let showEntireCurve = false
     let showCurveControls = false
-    let showAllPTV = true
+    let showAllPTV = false
+    let showBestGlide  =false
+    let showGlide  =false
+    let showCursorHelper = true
 
     onMount(() => {
         gridCanvas.width = CANVAS_WIDTH;
@@ -34,8 +37,8 @@
         grid = gridCanvas.getContext("2d")
         curve = curveCanvas.getContext("2d")
         mouse = mouseCanvas.getContext("2d")
-        drawGrid(grid, CANVAS_HEIGHT, CANVAS_WIDTH, 10, "rgba(0, 100, 255, 0.15)")
-        drawGrid(grid, CANVAS_HEIGHT, CANVAS_WIDTH, 50, "rgba(255, 150, 0, 0.4)")
+        drawGrid(grid, CANVAS_HEIGHT, CANVAS_WIDTH, 10, "rgba(0, 100, 255, 0.05)")
+        drawGrid(grid, CANVAS_HEIGHT, CANVAS_WIDTH, 50, "rgba(255, 150, 0, 0.15)")
         drawCurveLayer(curve, settings)
     })
 
@@ -47,14 +50,14 @@
         mouse.clearRect(0, 0, settings.width, settings.height)
         if (x >= 0 && x <= CANVAS_WIDTH && y >= 0 && y <= CANVAS_HEIGHT) {
             console.log('updating mouse')
-            drawMouseLayer(mouse, mouseCoordinates, origin, curveNumbers)
+            drawMouseLayer(mouse, mouseCoordinates, origin, curveNumbers, showGlide, showCursorHelper)
         }
     }
 
     $:if (curve) {
         console.log('updating curve')
         curve.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-        drawCurveLayer(curve, curveNumbers, origin, showEntireCurve, showAllPTV)
+        drawCurveLayer(curve, curveNumbers, origin, showEntireCurve, showAllPTV, showBestGlide)
     }
 
     const reset = ()=>{
@@ -81,7 +84,16 @@
     <button on:click={reset}>Reinitialiser</button>
     <br>
       Montrer différentes charges alaires : 
-<input type="checkbox" bind:checked={showAllPTV}>
+    <input type="checkbox" bind:checked={showAllPTV}>
+    <br>
+    Montrer la finesse max : 
+  <input type="checkbox" bind:checked={showBestGlide}>
+  <br>
+    Montrer la finesse à la souris : 
+  <input type="checkbox" bind:checked={showGlide}>
+  <br>
+  Montrer les valeurs : 
+<input type="checkbox" bind:checked={showCursorHelper}>
 <br>
     Modifier la polaire : 
 <input type="checkbox" bind:checked={showCurveControls}>

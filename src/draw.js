@@ -19,8 +19,10 @@ const cursorHelper = (ctx, x, y) => {
   ctx.stroke()
   ctx.setLineDash([])
   ctx.lineWidth = 1
-  ctx.strokeText(`${x / 10} km/h`, x + 5, 8)
-  ctx.strokeText(`-${y / 100} m/s`, 0, y + 13)
+  ctx.font = "18px sans-serif";
+  ctx.fillStyle = "black"
+  ctx.fillText(`${Math.floor(x / 6)-4} km/h`, x + 5, 18)
+  ctx.fillText(`-${y / 100} m/s`, 0, y + 20)
 }
 
 export const findPoints = (
@@ -92,12 +94,14 @@ const distance = (pointA, pointB) => {
   return Math.sqrt(a * a + b * b)
 }
 
-export const drawMouseLayer = (ctx, mouseCoordinates, origin, curve) => {
-  //cursorHelper(ctx, mouseCoordinates.x, mouseCoordinates.y)
+export const drawMouseLayer = (ctx, mouseCoordinates, origin, curve, showGlide = true, showCursorHelper = true) => {
+  if (showCursorHelper) {
+    cursorHelper(ctx, mouseCoordinates.x, mouseCoordinates.y)
+  }
   const curveFunction = (i) => {
     return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
   }
-  if (mouseCoordinates.x > 150 && mouseCoordinates.x < 350) {
+  if (mouseCoordinates.x > 150 && mouseCoordinates.x < 350 && showGlide) {
     drawGlide(
       ctx,
       mouseCoordinates.x,
@@ -114,7 +118,8 @@ export const drawCurveLayer = (
   curve,
   origin,
   showEntireCurve = false,
-  showAllPTV
+  showAllPTV,
+  showBestGlide
 ) => {
   const curveFunction = (i) => {
     return Math.cos((i - curve.D) / curve.C) * curve.A + curve.E + i / curve.B
@@ -135,8 +140,8 @@ export const drawCurveLayer = (
     drawCurve(ctx, allCurvePoints, "rgba(0,0,255,0.1)", 5, origin, false)
   }
   if (showAllPTV) {
-    drawCurve(ctx, heavyCurvePoints, "purple", 5, origin)
-    drawCurve(ctx, lightCurvePoints, "cyan", 5, origin)
+    drawCurve(ctx, heavyCurvePoints, "purple", 5, origin, showBestGlide)
+    drawCurve(ctx, lightCurvePoints, "cyan", 5, origin, showBestGlide)
   }
-  drawCurve(ctx, mainCurvePoints, "blue", 5, origin)
+  drawCurve(ctx, mainCurvePoints, "blue", 5, origin, showBestGlide)
 }
