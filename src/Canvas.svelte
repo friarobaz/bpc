@@ -3,7 +3,7 @@
     import {drawMouseLayer, drawCurveLayer} from './draw'
     import {drawGrid} from './grid'
     let gridCanvas, curveCanvas, mouseCanvas, grid, curve, mouse, container
-    const CANVAS_HEIGHT = window.innerHeight - 400
+    const CANVAS_HEIGHT = window.innerHeight - 300
     const CANVAS_WIDTH = window.innerWidth - 700
     
     let settings = {
